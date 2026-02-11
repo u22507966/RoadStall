@@ -16,8 +16,9 @@
                 <input type="password" id="password" name="password" [(ngModel)]="password" required>
             </div>
             <button type="submit" [disabled]="!loginForm.form.valid">Login</button>
-            <button type="button" (click)="onRegister()">Register</button>
+            <button type="button" [disabled]="!loginForm.form.valid" (click)="onRegister()">Register</button>
             <h4 *ngIf="errorMessage">{{ errorMessage }}</h4>
+            <h3 *ngIf="successMessage">{{successMessage}}</h3>
         </form>
     </div>
 </div>
