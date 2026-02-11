@@ -1,0 +1,484 @@
+import { Component } from '@angular/core';
+import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms';
+import { Router } from '@angular/router';
+import { Stock } from '../Models/stock';
+import { StockTake } from '../Models/stock-take';
+import { StockChange } from '../Models/stock-change';
+import { Sale } from '../Models/sale';
+import { OnInit } from '@angular/core';
+import { StockService } from '../Services/stock';
+import { StockTakeService } from '../Services/stock-take';
+import { StockChangeService } from '../Services/stock-change-service';
+import { SaleService } from '../Services/sale-service';
+import { Observable } from 'rxjs';
+import { isPlatformBrowser } from '@angular/common';
+import { Inject, PLATFORM_ID } from '@angular/core';
+import { ChangeDetectorRef } from '@angular/core';
+
+import ExcelJS from 'exceljs';
+import { saveAs } from 'file-saver';
+
+interface todaysStockChangesTable {
+  StockName?: string;
+  cStockChanges: StockChange[];
+}
+
+@Component({
+  selector: 'app-stock-take',
+  imports: [CommonModule, FormsModule],
+  templateUrl: './stock-take.html',
+  styleUrl: './stock-take.css',
+})
+export class StockTakeClass implements OnInit {
+
+  // mockStock: Stock[] = [
+  //   {StockItem: 'Litchi 2KG', Price: 70.00},
+  //   {StockItem: 'Honey Bottle 500g', Price: 90},
+  //   {StockItem: 'Honey Punnet', Price: 40},
+  //   {StockItem: 'Honey 1KG', Price: 160},
+  //   {StockItem: 'Honey Bottle Comb 350g', Price: 70},
+  //   {StockItem: 'Nuts 100g', Price: 20},
+  //   {StockItem: 'Nuts 200g', Price: 30},
+  //   {StockItem: 'Basil', Price: 15},
+  //   {StockItem: 'Mac Trees', Price: 60},
+  //   {StockItem: 'Litchi Sulphur Lug', Price: 250},
+  //   {StockItem: 'White Bag', Price: 10},
+  //   {StockItem: 'Empty 2KG Box', Price: 7},
+  //   {StockItem: 'Litchi Red Lug', Price: 220},
+  // ];
+  stock$!: Observable<Stock[]>;
+  CurrentStock: Stock[] = [];
+
+  stockTake$!: Observable<StockTake[]>;
+  StockTake: StockTake[] = [];
+
+  currentStockChange: StockChange[] = [];
+  stockChangeNames: string[] = [];
+  // todaysStockChangesTable: todaysStockChangesTable[] = [];
+
+  currentSales: Sale[] = [];
+
+  unitsSoldByStockId: Record<number, number> = {};
+
+  stockAuditTrail: StockChange[] = [];
+  selectedQuantity: number = 0;
+  selectedStockItem!: Stock;
+  showStockSelectModal: boolean = false;
+  showQuantitySection: boolean = false;
+  changeType: string = '';
+  today = new Date();
+  selectedDate: string = new Date().toISOString().split('T')[0];
+
+  // using the async pipe, loading is handled in the template
+
+  constructor(private router: Router, private stockService: StockService, private stockTakeService: StockTakeService, private stockChangeService: StockChangeService,
+    @Inject(PLATFORM_ID) private platformId: object, private cdr: ChangeDetectorRef, private saleService: SaleService
+  ) { }
+
+  ngOnInit(): void {
+
+    if (!isPlatformBrowser(this.platformId)) {
+      return;
+    }
+
+    // Expose the observable and let the template subscribe with the async pipe
+    this.stock$ = this.stockService.getStock();
+    this.CurrentStock = this.stock$ as unknown as Stock[];
+    // localStorage.setItem('CurrentStock', JSON.stringify(this.CurrentStock));   Local Storage not working beacuse trying to save observable directly. I think observables change
+
+    // First, subscribe to stock to get all stock items
+    this.stockService.getStock().subscribe((stockItems: Stock[]) => {
+      this.CurrentStock = stockItems;
+
+      // Then fetch stock take data
+      this.stockTakeService.getStockTake().subscribe((data: any[]) => {
+
+        // Normalize/map incoming data (case-insensitive) to the StockTake interface
+        this.StockTake = (data || []).map((item: any) => ({
+          ID: item.ID ?? item.id ?? item.Id ?? 0,
+          UserId: item.UserId ?? item.userId ?? item.user_id ?? 0,
+          StockId: item.StockId ?? item.stockId ?? item.StockID ?? item.stock_id ?? 0,
+          Date: new Date(item.Date ?? item.date ?? Date.now()),
+          OpeningStock: item.OpeningStock ?? item.openingStock ?? item.opening_stock ?? 0,
+          ClosingStock: item.ClosingStock ?? item.closingStock ?? item.closing_stock ?? 0,
+        }));
+
+        // Ensure every stock item has a corresponding StockTake entry
+        stockItems.forEach((stockItem: Stock) => {
+          const existingEntry = this.StockTake.find(st => st.StockId === stockItem.id);
+          if (!existingEntry) {
+            // Create a new StockTake entry with default values
+            this.StockTake.push({
+              ID: 0, // 0 indicates a new entry that hasn't been saved yet
+              UserId: 0,
+              StockId: stockItem.id,
+              Date: new Date(),
+              OpeningStock: 0,
+              ClosingStock: 0,
+            });
+          }
+        });
+
+        // Sort StockTake to match the order of stock items
+        this.StockTake.sort((a, b) => {
+          const indexA = stockItems.findIndex(s => s.id === a.StockId);
+          const indexB = stockItems.findIndex(s => s.id === b.StockId);
+          return indexA - indexB;
+        });
+
+        this.cdr.detectChanges();
+        console.log("Fetched and mapped stock take data in NgOnInIt:", this.StockTake);
+      });
+    });
+
+    this.stockChangeService.GetStockChange().subscribe((data: any[]) => {
+      this.currentStockChange = data.map((item: any) => ({
+        Id: item.Id ?? item.id ?? 0,
+        UserId: item.UserId ?? item.userId ?? 0,
+        StockId: item.StockId ?? item.stockId ?? 0,
+        ChangeType: item.ChangeType ?? item.changeType ?? '',
+        Quantity: item.Quantity ?? item.quantity ?? 0,
+        ChangeDate: new Date(item.ChangeDate ?? item.changeDate ?? Date.now()),
+        Adjustment: item.Adjustment ?? item.adjustment ?? 0,
+      }));
+      // filtering to only today's changes
+      this.currentStockChange = this.currentStockChange.filter(item => {
+        const itemDate = new Date(item.ChangeDate);
+        const today = new Date();
+        return itemDate.getDate() === today.getDate() &&
+          itemDate.getMonth() === today.getMonth() &&
+          itemDate.getFullYear() === today.getFullYear();
+      });
+
+      // for(let stockItem of this.currentStockChange){           
+      //   this.todaysStockChangesTable.push({
+      //     cStockChanges: stockItem ? [stockItem] : [],
+      //     StockName: this.CurrentStock.find(s => s.id === stockItem.StockId)?.stockName || 'Unknown',
+      //   });
+      // }
+      this.getStockChangeNames();
+      this.cdr.detectChanges();
+
+      console.log("Fetched stock change data in NgOnInIt:", this.currentStockChange);
+    });
+
+    this.saleService.getSales().subscribe((data: any[]) => {
+      this.currentSales = data.map((item: any) => ({
+        Id: item.Id ?? item.id ?? 0,
+        StockId: item.StockId ?? item.stockId ?? 0,
+        QuantitySold: item.Quantity ?? item.quantity ?? 0,
+        TotalPrice: item.TotalPrice ?? item.totalPrice ?? 0,
+        Date: new Date(item.SaleDate ?? item.saleDate ?? Date.now()),
+        SaleGroup: item.SaleGroup ?? item.saleGroup ?? '',
+        
+      }));
+      this.cdr.detectChanges();
+      console.log("Fetched sales data in NgOnInIt:", this.currentSales);
+    });
+  }
+
+  getUnitsSold(stockId: number): number {
+    const cached = this.unitsSoldByStockId[stockId];
+    if (typeof cached === 'number') {
+      return cached;
+    }
+
+    this.saleService.getUnitsSold(stockId).subscribe({
+      next: (totalSold) => {
+        this.unitsSoldByStockId[stockId] = Number(totalSold ?? 0);
+        this.cdr.detectChanges();
+      },
+      error: (error) => {
+        console.error(`Error fetching units sold for stock ID ${stockId}:`, error);
+        this.unitsSoldByStockId[stockId] = 0;
+      },
+    });
+
+    return 0;
+  }
+
+  getStockChangeNames() {
+    let count = 0;
+    for (let item of this.currentStockChange) {
+      this.stockService.getStockById(item.StockId).subscribe((data: Stock) => {
+        this.stockChangeNames[count] = data.stockName;
+        count++;
+      });
+      // this.stockChangeNames[count] = 
+    }
+  }
+
+  getStockChangeById(stockId: number) {
+    return this.currentStockChange.find(s => s.StockId == stockId)?.Quantity || 0;
+  }
+
+  getReceivedChanges(stockId: number): StockChange[] {
+    return this.currentStockChange
+      .filter(c => c.StockId === stockId && c.ChangeType === 'Stock Received')
+      .sort((a, b) => +new Date(a.ChangeDate) - +new Date(b.ChangeDate));
+  }
+
+  getRemovedChanges(stockId: number): StockChange[] {
+    return this.currentStockChange
+      .filter(c => c.StockId === stockId && c.ChangeType === 'Stock Removed')
+      .sort((a, b) => +new Date(a.ChangeDate) - +new Date(b.ChangeDate));
+  }
+
+  // 2) Compute "row counts" (max number of changes across all products)
+  getReceivedRowCount(currentStock: Stock[]): number[] {
+    const max = Math.max(
+      0,
+      ...currentStock.map(s => this.getReceivedChanges(s.id).length)
+    );
+    return Array.from({ length: max }, (_, i) => i);
+  }
+
+  getRemovedRowCount(currentStock: Stock[]): number[] {
+    const max = Math.max(
+      0,
+      ...currentStock.map(s => this.getRemovedChanges(s.id).length)
+    );
+    return Array.from({ length: max }, (_, i) => i);
+  }
+
+
+  goBackDashboard(): void {
+    this.router.navigate(['/dashboard']);
+  }
+
+  selectStockItem(stockitem: Stock, index: number) {
+    this.selectedStockItem = stockitem;
+  }
+
+  saveStockChange() {
+
+    if (!this.selectedStockItem || this.selectedQuantity <= 0) {
+      console.warn('Invalid stock item or quantity. Cannot save stock change.');
+      return;
+    }
+
+    //Getting the stocks StockTake to check if theres a closing stock, to then add the adjustment value to stock change model
+    console.log('selected id:', this.selectedStockItem.id);
+    this.stockTakeService.getStockTakeByStockId(this.selectedStockItem.id).subscribe({
+      next: (stockTake) => {
+        // console.log('Fetched stock take for selected item:', stockTake);
+        // console.log('ClosingStock value:', stockTake.ClosingStock);
+        // console.log('Full stockTake object:', JSON.stringify(stockTake));
+        
+        var isAdjustment = 0;
+        // Backend sends closingStock with lowercase 'c'
+        const closingStock = (stockTake as any).closingStock ?? stockTake.ClosingStock ?? 0;
+        if(closingStock > 0){
+          isAdjustment = 1;
+        }
+        // console.log('isAdjustment value:', isAdjustment);
+
+        this.stockAuditTrail.push({
+          Id: this.stockAuditTrail.length + 1,
+          UserId: 1,
+          StockId: this.selectedStockItem.id,
+          ChangeType: this.changeType,
+          Quantity: this.selectedQuantity,
+          ChangeDate: new Date(),
+        });
+
+        var x: StockChange = {
+          Id: 0,
+          UserId: 1,
+          StockId: this.selectedStockItem.id,
+          ChangeType: this.changeType,
+          Quantity: this.selectedQuantity,
+          ChangeDate: new Date(),
+          Adjustment: isAdjustment
+        }
+
+        this.stockChangeService.PostStockChange(x).subscribe({
+      next: (response) => {
+        console.log('Stock change saved successfully:', response);
+        // Refresh data without hard reload
+        this.stock$ = this.stockService.getStock();
+        this.stockChangeService.GetStockChange().subscribe((data: any[]) => {
+          this.currentStockChange = data.map((item: any) => ({
+            Id: item.Id ?? item.id ?? 0,
+            UserId: item.UserId ?? item.userId ?? 0,
+            StockId: item.StockId ?? item.stockId ?? 0,
+            ChangeType: item.ChangeType ?? item.changeType ?? '',
+            Quantity: item.Quantity ?? item.quantity ?? 0,
+            ChangeDate: new Date(item.ChangeDate ?? item.changeDate ?? Date.now()),
+            Adjustment: item.Adjustment ?? item.adjustment ?? 0
+          }));
+          this.currentStockChange = this.currentStockChange.filter(item => {
+            const itemDate = new Date(item.ChangeDate);
+            const today = new Date();
+            return itemDate.getDate() === today.getDate() &&
+              itemDate.getMonth() === today.getMonth() &&
+              itemDate.getFullYear() === today.getFullYear();
+          });
+          this.getStockChangeNames();
+          setTimeout(() => {
+            this.cdr.detectChanges();
+          });
+        });
+        
+        console.log("Stock change saved:", this.stockAuditTrail);
+        this.showStockSelectModal = false;
+        this.showQuantitySection = false;
+        this.selectedQuantity = 0;
+      },
+      error: (error) => {
+        console.error('Error saving stock change:', error);
+      }
+    });
+      },
+      error: (error) => {
+        console.error('Error fetching stock take:', error);
+      }
+    });
+  } //save stock changes method
+
+  sendUpdates() {
+    console.log("Sending stock updates to backend...", this.CurrentStock);
+  }
+
+  UpdateStockTake(index: number, product?: StockTake) {
+
+    // var findProd = this.StockTake[index];
+    // if (!product) {
+    //   product = findProd;
+    // }
+
+    if (!product) {
+      console.warn('UpdateStockTake called with undefined product at index', index, 'prod:', product);
+      return;
+    }
+
+    product.Date = this.today;                //Need to update the date to the day when it was updated for auditing
+
+    const idForUrl = Number((product as any).ID ?? (product as any).Id ?? (product as any).id);
+
+    const payloadPascal: any = {
+      Id: idForUrl,
+      UserId: Number((product as any).UserId ?? 0),
+      StockId: Number((product as any).StockId ?? 0),
+      Date: this.today,                                               //product.Date ? (product.Date instanceof Date ? product.Date.toISOString() : new Date(product.Date).toISOString()) : null
+      OpeningStock: Number((product as any).OpeningStock ?? 0),
+      ClosingStock: Number((product as any).ClosingStock ?? 0),
+    };
+
+    console.log('Sending PascalCase payload to API:', payloadPascal);
+
+    this.stockTakeService.updateStockTake(product.ID, product).subscribe({
+      next: (response) => {
+        console.log('Stock take updated successfully:', response);
+        this.stock$ = this.stockService.getStock();
+        this.cdr.detectChanges();
+      },
+      error: (error) => {
+        console.error('Error updating stock take:', error);
+      }
+    });
+
+    console.log('Current Stock Take Data:', this.StockTake);
+  }
+
+  async exportStockTableToExcel() {
+    const element = document.getElementById('stockTablePdf') as HTMLTableElement | null;
+    if (!element) return;
+
+    // Helper to format date as dd/MM/YYYY
+    const formatDate = (d: Date | string) => {
+      const date = d instanceof Date ? d : new Date(d);
+      const dd = String(date.getDate()).padStart(2, '0');
+      const mm = String(date.getMonth() + 1).padStart(2, '0');
+      const yyyy = date.getFullYear();
+      return `${dd}/${mm}/${yyyy}`;
+    };
+
+    const dateStr = formatDate(this.selectedDate);
+    const exportDate = new Date(this.selectedDate);
+
+    // Build table body from the rendered DOM table
+    const rows = Array.from(element.querySelectorAll('tr'));
+    const tableData: string[][] = rows.map((row) => {
+      const cells = Array.from(row.querySelectorAll('th,td'));
+      return cells.map((cell) => {
+        const input = cell.querySelector('input') as HTMLInputElement | null;
+        if (input) return (input.value ?? '').toString();
+        return (cell.textContent ?? '').replace(/\s+/g, ' ').trim();
+      });
+    });
+
+    // Create workbook and worksheet
+    const wb = new ExcelJS.Workbook();
+    const ws = wb.addWorksheet('Stock Take');
+
+    // Add title and date at the top
+    ws.mergeCells('A1:D1');
+    const titleCell = ws.getCell('A1');
+    titleCell.value = 'Stock Take';
+    titleCell.font = { bold: true, size: 16 };
+    titleCell.alignment = { horizontal: 'center', vertical: 'middle' };
+
+    ws.mergeCells('A2:D2');
+    const dateCell = ws.getCell('A2');
+    dateCell.value = `Date: ${dateStr}`;
+    dateCell.font = { bold: true, size: 12 };
+    dateCell.alignment = { horizontal: 'center', vertical: 'middle' };
+
+    // Add table data starting from row 4
+    tableData.forEach((rowData, rowIndex) => {
+      const excelRow = ws.getRow(rowIndex + 4);
+      rowData.forEach((cellValue, colIndex) => {
+        const cell = excelRow.getCell(colIndex + 1);
+        // Try to parse as number if possible
+        const numValue = Number(cellValue);
+        cell.value = !isNaN(numValue) && cellValue !== '' ? numValue : cellValue;
+        
+        // Style section rows (headers)
+        const domRow = rows[rowIndex];
+        if (domRow.classList.contains('section-row')) {
+          cell.font = { bold: true };
+          if (colIndex === 0) {
+            cell.fill = {
+              type: 'pattern',
+              pattern: 'solid',
+              fgColor: { argb: 'FFF5F5F5' }
+            };
+          }
+        }
+        
+        // Add borders
+        cell.border = {
+          top: { style: 'thin' },
+          left: { style: 'thin' },
+          bottom: { style: 'thin' },
+          right: { style: 'thin' }
+        };
+        
+        cell.alignment = { horizontal: 'center', vertical: 'middle' };
+      });
+    });
+
+    // Auto-size columns
+    ws.columns.forEach((column) => {
+      if (column && column.eachCell) {
+        let maxLength = 10;
+        column.eachCell({ includeEmpty: false }, (cell) => {
+          const cellValue = cell.value ? cell.value.toString() : '';
+          maxLength = Math.max(maxLength, cellValue.length);
+        });
+        column.width = Math.min(maxLength + 2, 30);
+      }
+    });
+
+    // Save file
+    const buffer = await wb.xlsx.writeBuffer();
+    const blob = new Blob([buffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+    saveAs(blob, `StockTake_${exportDate.toISOString().slice(0, 10)}.xlsx`);
+  }
+
+
+}
+
+

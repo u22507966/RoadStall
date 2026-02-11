@@ -1,0 +1,31 @@
+<div class="drop-down-container">
+
+    <div class="drop-down">
+        <label for="products">Select Product:</label>
+        <select name="products" id="products" [(ngModel)]="selectedProductId">
+            <option *ngFor="let item of stock" [value]="item.id">{{ item.stockName }}
+            </option>
+        </select>
+    </div>
+
+    <div class="buttons">
+        <button (click)="deleteProduct()">Delete</button>
+        <button routerLink="/dashboard">BACK</button>
+        <button (click)="isAddingProduct = true">Add Product</button>
+    </div>
+
+</div>
+
+<div class="addProduct" *ngIf="isAddingProduct">
+    <form #addProdForm="ngForm" (ngSubmit)="addProduct()">
+        <label for="productName">Product Name:</label>
+        <input type="text" id="productName" name="productName" required [(ngModel)]="newName">
+
+        <label for="productPrice">Price:</label>
+        <input type="number" id="productPrice" name="productPrice" required [(ngModel)]="newPrice">
+
+        <button type="submit" [disabled]="!addProdForm.form.valid">Add Product</button>
+        <button (click)="isAddingProduct = false">Cancel</button>
+
+    </form>
+</div>

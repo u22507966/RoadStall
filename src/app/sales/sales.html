@@ -1,0 +1,100 @@
+<div class="sales-container">
+
+    <div class="header">
+        <h1>Sales</h1>
+        <button (click)="goBackDashboard()">Back</button>
+    </div>
+
+    <div class="body">
+
+        <div class="top-buttons">
+            <button (click)="makingSale = true;">Make a Sale</button>
+            <button (click)="makingSale = false;">View Sales History</button>
+        </div>
+
+        <div class="gridButtons" *ngIf="makingSale">
+            <button *ngFor="let stockitem of currentStock; let i = index"
+                (click)="numberOfProducts = numberOfProducts + 1; selectedProduct(stockitem, i)" >{{stockitem.stockName}}</button>
+        </div>
+
+        <div class="saleSummary">
+            <div class="eachSale">
+                <table>
+                    <tbody>
+                        <tr *ngFor="let sale of currentSales; let i = index">
+                            <th>A{{saleIdCounter}}</th>
+                            <th>{{selectedProdNames[i]}}</th>
+                            <th>Price: R{{sale.TotalPrice}}</th>
+                            <th>Quantity: <input type="number" [(ngModel)]="sale.QuantitySold"></th>
+                            <th>Total: R{{sale.TotalPrice * sale.QuantitySold}}</th>
+                        </tr>
+                        <tr *ngIf="currentSales.length > 1">
+                            <th colspan="3">Grand Total:</th>
+                            <th>R{{grandTotal}}</th>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <button (click)="finishSale()" *ngIf="makingSale">Finish</button>
+        </div>
+
+    </div>
+
+</div>
+
+<div class="sales-container">
+
+    <div class="header-2">
+        <h1>Sales History For: {{today | date:'dd/MM/yyyy'}}</h1>
+        <button (click)="exportDailySalesToExcel()">Export to Excel</button>
+    </div>
+
+    <div class="body">
+
+        <div class="saleSummary">
+            <table>
+                <!-- <tbody>
+                    <tr *ngFor="let sale of sales; let i = index">
+                        <th>A{{sale.SaleGroup}}</th>
+                        <th>{{getStockNameById(sale.StockId)}}</th>
+                        <th>Price: R{{sale.TotalPrice}}</th>
+                        <th>Quantity: {{sale.QuantitySold}}</th>
+                        <th>Total: R{{sale.TotalPrice * sale.QuantitySold}}</th>
+                    </tr>
+                </tbody> -->
+                <thead>
+                    <tr>
+                        <th></th>
+                        <th>Product</th>
+                        <th>Price</th>
+                        <th>Quantity</th>
+                        <th>Total</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <ng-container *ngFor="let group of saleGroupingForTable">
+                        <!-- Optional: group header row -->
+                        <tr>
+                            <th colspan="5">Sale Group A{{ group.saleGroup }}</th>
+                        </tr>
+
+                        <tr *ngFor="let item of group.items">
+                            <!-- <td>{{ item.SaleGroup }}</td> -->
+                            <td>{{ getStockNameById(item.StockId) }}</td>
+                            <td>R{{ getStockById(item.StockId)?.price }}</td>
+                            <td>{{ item.QuantitySold }}</td>
+                            <td>R{{ item.TotalPrice }}</td>
+                        </tr>
+                        <tr>
+                            <td colspan="3"></td>
+                            <th>Grand Total:</th>
+                            <th>R{{group.grandTotal}}</th>
+                        </tr>
+                    </ng-container>
+                </tbody>
+            </table>
+        </div>
+
+    </div>
+
+</div>

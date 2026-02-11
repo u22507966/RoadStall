@@ -1,0 +1,158 @@
+:root {
+    --bg: #f5f7fb;
+    --card: #ffffff;
+    --muted: #6b7280;
+    --accent: #2563eb;
+    --accent-600: #1e40af;
+    --shadow: 0 6px 18px rgba(22, 29, 73, 0.08);
+    --radius: 10px;
+}
+
+.drop-down-container {
+    max-width: 500px;
+    margin: 60px auto;
+    padding: 32px;
+    background: linear-gradient(180deg, rgba(255,255,255,0.6), rgba(250,251,255,0.6));
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    font-family: Inter, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;
+    color: #0f172a;
+}
+
+.drop-down {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    margin-bottom: 24px;
+}
+
+.drop-down label {
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: var(--muted);
+}
+
+.drop-down select {
+    width: 100%;
+    padding: 12px 14px;
+    font-size: 1rem;
+    border: 1px solid rgba(15, 23, 42, 0.2);
+    border-radius: 8px;
+    background: var(--card);
+    color: #0f172a;
+    outline: none;
+    transition: all 0.15s ease;
+    cursor: pointer;
+}
+
+.drop-down select:focus {
+    border-color: var(--accent);
+    box-shadow: 0 4px 14px rgba(37, 99, 235, 0.12);
+}
+
+.buttons {
+    display: flex;
+    gap: 12px;
+    justify-content: center;
+}
+
+.buttons button {
+    padding: 10px 20px;
+    font-size: 0.95rem;
+    font-weight: 500;
+    border: 1px solid rgba(15, 23, 42, 0.08);
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.15s ease-in-out;
+    background: transparent;
+    color: var(--accent-600);
+}
+
+.buttons button:hover {
+    background: rgba(37, 99, 235, 0.06);
+    transform: translateY(-1px);
+}
+
+.buttons button:active {
+    transform: translateY(0);
+}
+
+.addProduct {
+    max-width: 500px;
+    margin: 24px auto;
+    padding: 32px;
+    background: linear-gradient(180deg, rgba(255,255,255,0.6), rgba(250,251,255,0.6));
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    font-family: Inter, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;
+    color: #0f172a;
+}
+
+.addProduct form {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.addProduct label {
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: var(--muted);
+    margin-bottom: -8px;
+}
+
+.addProduct input[type="text"],
+.addProduct input[type="number"] {
+    width: 100%;
+    padding: 12px 14px;
+    font-size: 1rem;
+    border: 1px solid rgba(15, 23, 42, 0.2);
+    border-radius: 8px;
+    background: var(--card);
+    color: #0f172a;
+    outline: none;
+    transition: all 0.15s ease;
+    box-sizing: border-box;
+}
+
+.addProduct input:focus {
+    border-color: var(--accent);
+    box-shadow: 0 4px 14px rgba(37, 99, 235, 0.12);
+}
+
+.addProduct button {
+    padding: 10px 20px;
+    font-size: 0.95rem;
+    font-weight: 500;
+    border: 1px solid rgba(15, 23, 42, 0.08);
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.15s ease-in-out;
+    background: transparent;
+    color: var(--accent-600);
+    margin-top: 8px;
+}
+
+.addProduct button:hover:not(:disabled) {
+    background: rgba(37, 99, 235, 0.06);
+    transform: translateY(-1px);
+}
+
+.addProduct button:active:not(:disabled) {
+    transform: translateY(0);
+}
+
+.addProduct button:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.addProduct button[type="submit"] {
+    background: var(--accent);
+    color: rgb(0, 0, 0);
+    border-color: var(--accent);
+}
+
+.addProduct button[type="submit"]:hover:not(:disabled) {
+    background: var(--accent-600);
+}

@@ -1,0 +1,6 @@
+# Netlify SPA routing
+# Always serve index.html so Angular handles client-side routes.
+#
+# To revert (if you later use true SSR hosting), remove this file and
+# configure your SSR server/adapter instead.
+/*    /index.html   200

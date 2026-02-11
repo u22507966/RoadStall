@@ -1,0 +1,23 @@
+<div class="login-container">
+
+    <div class="top-bar">
+        <h1>RoadStall PWA</h1>
+        <!-- <button (click)="goToDashboard()">Dashboard Bypass</button> -->
+    </div>
+
+    <div class="loginForm">
+        <form #loginForm="ngForm" (ngSubmit)="onSubmit()">
+            <div>
+                <label for="username">Username:</label>
+                <input type="text" id="username" name="username" [(ngModel)]="username" required>
+            </div>
+            <div>
+                <label for="password">Password:</label>
+                <input type="password" id="password" name="password" [(ngModel)]="password" required>
+            </div>
+            <button type="submit" [disabled]="!loginForm.form.valid">Login</button>
+            <button type="button" (click)="onRegister()">Register</button>
+            <h4 *ngIf="errorMessage">{{ errorMessage }}</h4>
+        </form>
+    </div>
+</div>

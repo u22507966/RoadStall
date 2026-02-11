@@ -1,0 +1,126 @@
+:root {
+    --bg: #f5f7fb;
+    --card: #ffffff;
+    --muted: #6b7280;
+    --accent: #2563eb;
+    --accent-600: #1e40af;
+    --shadow: 0 6px 18px rgba(22, 29, 73, 0.08);
+    --radius: 10px;
+}
+
+.login-container {
+    max-width: 500px;
+    margin: 60px auto;
+    padding: 32px;
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.6), rgba(250, 251, 255, 0.6));
+    border-radius: var(--radius);
+    box-shadow: var(--shadow);
+    font-family: Inter, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;
+    color: #0f172a;
+}
+
+.top-bar {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 24px;
+    padding-bottom: 16px;
+    border-bottom: 1px solid rgba(15, 23, 42, 0.08);
+}
+
+.top-bar h1 {
+    font-size: 1.8rem;
+    margin: 0;
+    font-weight: 600;
+    color: #0f172a;
+}
+
+.loginForm {
+    display: flex;
+    flex-direction: column;
+}
+
+.loginForm form {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.loginForm form div {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.loginForm label {
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: var(--muted);
+}
+
+.loginForm input {
+    padding: 12px 14px;
+    font-size: 1rem;
+    border: 1px solid rgba(15, 23, 42, 0.2);
+    border-radius: 8px;
+    background: var(--card);
+    color: #0f172a;
+    outline: none;
+    transition: all 0.15s ease;
+}
+
+.loginForm input:focus {
+    border-color: var(--accent);
+    box-shadow: 0 4px 14px rgba(37, 99, 235, 0.12);
+}
+
+.loginForm button[type="submit"] {
+    padding: 12px 20px;
+    margin-top: 8px;
+    font-size: 1rem;
+    font-weight: 600;
+    border: none;
+    border-radius: 8px;
+    background: linear-gradient(90deg, var(--accent), var(--accent-600));
+    color: #000000;
+    cursor: pointer;
+    transition: all 0.15s ease-in-out;
+    box-shadow: 0 8px 20px rgba(37, 99, 235, 0.12);
+}
+
+.loginForm button[type="submit"]:hover:not(:disabled) {
+    transform: translateY(-2px);
+    box-shadow: 0 12px 28px rgba(37, 99, 235, 0.18);
+}
+
+.loginForm button[type="submit"]:active:not(:disabled) {
+    transform: translateY(0);
+}
+
+.loginForm button[type="submit"]:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.loginForm h4 {
+    margin: 0;
+    padding: 12px;
+    background: rgba(239, 68, 68, 0.1);
+    border: 1px solid rgba(239, 68, 68, 0.3);
+    border-radius: 8px;
+    color: #b91c1c;
+    font-size: 0.9rem;
+    font-weight: 500;
+    text-align: center;
+}
+
+@media (max-width: 600px) {
+    .login-container {
+        margin: 20px;
+        padding: 24px;
+    }
+
+    .top-bar h1 {
+        font-size: 1.5rem;
+    }
+}

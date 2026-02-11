@@ -36,6 +36,15 @@ app.use(
 );
 
 /**
+ * Redirect old/incorrect endpoint "/api/Stock" to the correct "/api/Stocks".
+ * Prevents 404s from legacy clients or typos.
+ */
+app.get('/api/Stock', (req, res) => {
+  console.warn(`[server] Redirecting ${req.method} ${req.originalUrl} -> /api/Stocks`);
+  res.redirect(301, '/api/Stocks');
+});
+
+/**
  * Handle all other requests by rendering the Angular application.
  */
 app.use((req, res, next) => {

@@ -1,0 +1,171 @@
+<div class="stock-take-container">
+
+    <div class="header">
+        <h1>Stock Take</h1>
+        <h2>{{today | date:'dd/MM/yyyy'}}</h2>
+        <button (click)="goBackDashboard()">Back</button>
+    </div>
+
+    <div class="body">
+
+        <div class="stockTable">
+            <ng-container *ngIf="stock$ | async as currentStock; else loading">
+                <table *ngIf="currentStock.length > 0" id="stockTablePdf">
+                    <tbody>
+                        <tr class="section-row section-row--start section-row--end">
+                            <th></th>
+                            <th *ngFor="let stockitem of currentStock">{{stockitem.stockName}}</th>
+                        </tr>
+                        <tr class="section-row section-row--start section-row--end">
+                            <th>Price</th>
+                            <td *ngFor="let stockitem of currentStock">{{stockitem.price}}</td>
+                        </tr>
+                        <tr class="section-row section-row--start section-row--end">
+                            <th>Opening Stock</th>
+                            <td *ngFor="let product of StockTake; let i = index"><input type="number"
+                                    [(ngModel)]="product.OpeningStock" (blur)="UpdateStockTake(i, product)">       <!--(ngModelChange)="UpdateStockTake(i, product)""-->
+                            </td>
+                        </tr>
+                        <!-- <tr>
+                            <th>Stock Received</th>
+                            <td *ngFor="let item of stock$ | async as currentStock"> {{getStockChangeById(item.id)}}</td>
+                        </tr>
+                        <tr>
+                            <th>Stock Removed</th>
+                            <td *ngFor="let item of stock$ | async as currentStock">{{getStockChangeById(item.id)}}</td>
+                        </tr> -->
+                        <ng-container *ngIf="getReceivedRowCount(currentStock) as receivedRows">
+                            <tr class="section-row section-row--start" [class.section-row--end]="receivedRows.length === 0">
+                                <th>Stock Received</th>
+                                <td *ngFor="let _ of currentStock"></td>
+                            </tr>
+
+                            <!-- One row per received change index -->
+                            <tr *ngFor="let rowIndex of receivedRows; let last = last"
+                                [ngClass]="{
+                                  'section-row': true,
+                                  'section-row--continuation': true,
+                                  'section-row--end': last
+                                }">
+                                <th></th>
+                                <td *ngFor="let stockitem of currentStock">
+                                    <ng-container *ngIf="getReceivedChanges(stockitem.id)[rowIndex] as ch">
+                                        +{{ ch.Quantity }}
+                                        {{ch.Adjustment == 1 ? '(Adj)' : ''}}
+                                        <!-- optional time -->
+                                        <!-- ({{ ch.ChangeDate | date:'HH:mm' }}) -->
+                                    </ng-container>
+                                </td>
+                            </tr>
+                        </ng-container>
+
+                        <ng-container *ngIf="getRemovedRowCount(currentStock) as removedRows">
+                            <tr class="section-row section-row--start" [class.section-row--end]="removedRows.length === 0">
+                                <th>Stock Removed</th>
+                                <td *ngFor="let _ of currentStock"></td>
+                            </tr>
+
+                            <!-- One row per removed change index -->
+                            <tr *ngFor="let rowIndex of removedRows; let last = last"
+                                [ngClass]="{
+                                  'section-row': true,
+                                  'section-row--continuation': true,
+                                  'section-row--end': last
+                                }">
+                                <th></th>
+                                <td *ngFor="let stockitem of currentStock">
+                                    <ng-container *ngIf="getRemovedChanges(stockitem.id)[rowIndex] as ch">
+                                        -{{ ch.Quantity }}
+                                        {{ch.Adjustment == 1 ? '(Adj)' : ''}}
+                                        <!-- optional time -->
+                                        <!-- ({{ ch.ChangeDate | date:'HH:mm' }}) -->
+                                    </ng-container>
+                                </td>
+                            </tr>
+                        </ng-container>
+
+                        <tr class="section-row section-row--start section-row--end">
+                            <th>Closing Stock</th>
+                            <td *ngFor="let product of StockTake; let i = index"><input type="number"
+                                    [(ngModel)]="product.ClosingStock" (blur)="UpdateStockTake(i, product)">
+                            </td>
+                        </tr>
+                        <tr class="section-row section-row--start section-row--end">
+                            <th>Units Sold</th>
+                            <td *ngFor="let stockitem of currentStock">
+                                {{getUnitsSold(stockitem.id)}}
+                            </td>
+                        </tr>
+                        <tr class="section-row section-row--start section-row--end">
+                            <th>Stock Left</th>
+                            <td *ngFor="let stockitem of currentStock">
+                                {{stockitem.quantity}}
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+
+                <div *ngIf="!currentStock.length">No stock items found.</div>
+            </ng-container>
+
+            <ng-template #loading>
+                <div class="loading">Loading stock…</div>
+            </ng-template>
+        </div>
+
+        <!-- clickOutsideDetect (clickOutside)="showStockSelectModal = false; showQuantitySection = false;" -->
+        <div class="modal" *ngIf="showStockSelectModal"
+            (click)="showStockSelectModal = false; showQuantitySection = false">
+            <div class="modal-content" (click)="$event.stopPropagation()">
+                <h2>Select a product</h2>
+                <div class="gridButtons">
+                    <button *ngFor="let stockitem of stock$ | async as currentStock; let i = index"
+                        (click)="selectStockItem(stockitem, i); showQuantitySection = true">{{stockitem.stockName}}</button>
+                </div>
+                <div class="unitButtons" *ngIf="showQuantitySection">
+                    <input type="number" placeholder="Enter quantity" [(ngModel)]="selectedQuantity">
+                    <button (click)="saveStockChange()">Save</button>
+                </div>
+            </div>
+        </div>
+
+        <div class="stockButtons">
+
+            <button class="stockActions" id="addButton"
+                (click)="showStockSelectModal = true; changeType = 'Stock Received'">Stock Received</button>
+            <button class="stockActions" id="removeButton"
+                (click)="showStockSelectModal = true; changeType = 'Stock Removed'">Stock Removed</button>
+
+            <input type="date" [(ngModel)]="selectedDate" class="date-picker" [disabled]="true">
+            <button (click)="exportStockTableToExcel()" class="stockActions" style="color: black;">Export to Excel</button>
+
+        </div>
+
+        <div class="stockTable">
+            <h2 class="center-heading">Stock Channges For Today: {{today | date:'dd/MM/yyyy'}}</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <!-- <th></th> -->
+                        <th>Stock Name</th>
+                        <th>Quantity</th>
+                        <th>UserID</th>
+                    </tr>
+                </thead>
+
+                <tbody>
+                    <tr *ngFor="let item of currentStockChange; let i = index">
+                        <!-- <td></td> -->
+                        <!-- <td>{{todaysStockChangesTable[i]?.StockName}}</td> -->
+                        <td>{{stockChangeNames[i]}}</td>
+                        <td>{{ item.ChangeType === 'Stock Removed' ? ('-' + item.Quantity) : item.Quantity }}</td>
+                        <td>{{item.UserId}}</td>
+                    </tr>
+                </tbody>
+            </table>
+
+        </div>
+
+    </div>
+
+</div>  
