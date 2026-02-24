@@ -226,7 +226,7 @@ export class Sales implements OnInit {
       for (let col = totalStart; col <= totalEnd; col += 2) {
         rowTotals.push(ws.getCell(row, col).address);
       }
-      ws.getCell(row, totalCol).value = { formula: rowTotals.length ? rowTotals.join('+') : '0' };
+      ws.getCell(row, totalCol).value = { formula: rowTotals.length ? `SUM(${rowTotals.join(',')})` : '0' };
       ws.getCell(row, totalCol).numFmt = '"R"#,##0.00';
       ws.getCell(row, totalCol).font = { bold: true };
       ws.getCell(row, totalCol).alignment = { horizontal: 'center' };
@@ -259,7 +259,7 @@ export class Sales implements OnInit {
       const subtotalTotalCol = firstProductCol + i * 2 + 1;
       subtotalTotalAddresses.push(ws.getCell(row, subtotalTotalCol).address);
     }
-    ws.getCell(row, totalCol).value = { formula: subtotalTotalAddresses.length ? subtotalTotalAddresses.join('+') : '0' };
+    ws.getCell(row, totalCol).value = { formula: subtotalTotalAddresses.length ? `SUM(${subtotalTotalAddresses.join(',')})` : '0' };
     ws.getCell(row, totalCol).numFmt = '"R"#,##0.00';
     ws.getCell(row, totalCol).font = { bold: true };
     ws.getCell(row, totalCol).alignment = { horizontal: 'center' };
@@ -306,6 +306,9 @@ export class Sales implements OnInit {
 
     // Freeze header rows
     ws.views = [{ state: 'frozen', ySplit: 4, xSplit: 1 }];
+
+    // Force Excel to recalculate formulas when opening
+    wb.calcProperties = { fullCalcOnLoad: true };
 
     const buffer = await wb.xlsx.writeBuffer();
     const blob = new Blob([buffer], {

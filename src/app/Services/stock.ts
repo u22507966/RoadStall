@@ -29,8 +29,8 @@ export class StockService {
     return this.http.delete<void>(`${this.apiUrl}/${id}`);
   }
 
-  addStock(newStock: Stock): Observable<Stock> {
-    return this.http.post<Stock>(this.apiUrl, newStock);
+  addStock(newStock: Stock, userId: number): Observable<Stock> {
+    return this.http.post<Stock>(this.apiUrl, newStock, { params: { userId: userId.toString() } });
   }
 
 

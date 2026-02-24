@@ -27,11 +27,22 @@ export class Products implements OnInit {
   newPrice: number = 0;
   newProd!: Stock;
 
+  //role variables
+  roleId!: number;
+
   constructor(private stockService: StockService, private cdr: ChangeDetectorRef) {
     this.stock$ = this.stockService.getStock();
   }
 
   ngOnInit(): void {
+
+    //quickly get users roleId and check if they've route hacked their way to this page
+    this.roleId = Number(localStorage.getItem('roleId'));
+    if(this.roleId === 0){
+      alert("You do not have permission to access the Products page.");
+      window.location.href = '/dashboard';
+    }
+
     this.stockService.getStock().subscribe(data => {
       this.stock = data.map((item: any) => ({
         id: item.id ?? item.Id ?? item.ID,
@@ -84,7 +95,8 @@ export class Products implements OnInit {
       price: this.newPrice
     };
 
-    this.stockService.addStock(this.newProd).subscribe({
+    const userId = Number(localStorage.getItem('userId'));
+    this.stockService.addStock(this.newProd, userId).subscribe({
       next: () => {
         console.log("Product added successfully:", this.newProd);
         this.stockService.getStock().subscribe({

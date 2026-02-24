@@ -4,6 +4,7 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { User } from '../Models/user';
 import { UserService } from '../Services/user-service';
+import { Role } from '../Services/role';
 import { ChangeDetectorRef } from '@angular/core';
 import { RegisterRequest } from '../Models/RegisterRequest';
 import { register } from 'module';
@@ -23,8 +24,8 @@ export class Login {
   errorMessage: string = '';
   successMessage: string = '';
 
-  constructor(private router: Router, private userService: UserService, private cdr: ChangeDetectorRef) {
-    
+  constructor(private router: Router, private userService: UserService, private cdr: ChangeDetectorRef, private roleService: Role) {
+
   }
 
   goToDashboard() {
@@ -38,26 +39,45 @@ export class Login {
       return;
     }
 
-    const loginRequest = {
-      username: this.username,
-      password: this.password
-    };
+    localStorage.setItem('username', this.username);
+    this.userService.getUserId(this.username).subscribe({
+      next: (userId) => {
+        localStorage.setItem('userId', userId.toString());
 
-    this.userService.Login(loginRequest).subscribe({
-      next: (response) => {
-        console.log('Login successful:', response);
-        this.goToDashboard();
+        //Get user role quick before login happens and store in localstorage
+        this.roleService.getUserRole(userId).subscribe({
+          next: (role) => {
+            localStorage.setItem('roleId', role);
+          }
+        });
+
+        const loginRequest = {
+          username: this.username,
+          password: this.password
+        };
+
+        this.userService.Login(loginRequest).subscribe({
+          next: (response) => {
+            console.log('Login successful:', response);
+            this.goToDashboard();
+          },
+          error: (error: HttpErrorResponse) => {
+            if (error.status === 401) {
+              this.errorMessage = 'User not Authorized. Contact Administrator';
+            }
+            if (error.status === 400) {
+              this.errorMessage = 'Invalid username or password';
+            }
+            this.cdr.detectChanges();
+          }
+        });
       },
       error: (error: HttpErrorResponse) => {
-        if(error.status === 401) {
-          this.errorMessage = 'User not Authorized. Contact Administrator';
-        }
-        if(error.status === 400) {
-          this.errorMessage = 'Invalid username or password';
-        }
-        this.cdr.detectChanges();
+        console.error('Error fetching user ID:', error);
       }
     });
+
+
 
     this.errorMessage = '';
   }

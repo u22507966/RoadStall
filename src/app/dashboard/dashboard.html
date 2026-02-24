@@ -8,8 +8,15 @@
         <span class="btn-label">Sales</span>
     </button>
 
-    <button class="dashboard-btn primary" routerLink="/products">Products</button>
+    <button class="dashboard-btn primary" (click)="goToProducts()">Products</button>            
+    <!-- routerLink="/products" -->
 
     <button class="dashboard-btn primary" (click)="goBack()">Back to Login</button>
 
+
+    <div class="error-container" *ngIf="errorMessage">
+        <div class="error-message">
+            <h3>{{ errorMessage }}</h3>
+        </div>
+    </div>
 </div>

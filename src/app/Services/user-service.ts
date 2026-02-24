@@ -14,15 +14,24 @@ export interface LoginRequest {
 })
 export class UserService {
   
-  readonly apiUrl = `${environment.apiUrl}/api/Auth`;
+  readonly apiUrl = `${environment.apiUrl}/api/Users`;
+  readonly authUrl = `${environment.apiUrl}/api/Auth`;
 
   constructor(private http: HttpClient) {}
 
   Login(UserDTO: LoginRequest): Observable<LoginRequest>{
-    return this.http.post<LoginRequest>(`${this.apiUrl}/login`, UserDTO);
+    return this.http.post<LoginRequest>(`${this.authUrl}/login`, UserDTO);
   } 
 
   Register(registerRequest: RegisterRequest): Observable<RegisterRequest>{
-    return this.http.post<RegisterRequest>(`${this.apiUrl}/register`, registerRequest);
+    return this.http.post<RegisterRequest>(`${this.authUrl}/register`, registerRequest);
+  }
+
+  getUserId(username: string): Observable<number>{
+    return this.http.get<number>(`${this.apiUrl}/by-username/${username}`);
+  }
+
+  getUserById(id: number): Observable<any>{
+    return this.http.get<any>(`${this.apiUrl}/${id}`);
   }
 }

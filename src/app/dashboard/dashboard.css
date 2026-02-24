@@ -81,3 +81,52 @@
     .dashboard-container{ padding: 14px; gap: 12px; }
     .dashboard-btn{ padding: 12px 16px; font-size: 18px; }
 }
+
+/* Error message styling */
+.error-container {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    margin-top: 12px;
+}
+
+.error-message {
+    background: linear-gradient(135deg, #fee2e2 0%, #fecaca 100%);
+    border-left: 4px solid #ef4444;
+    border-radius: 12px;
+    padding: 16px 20px;
+    box-shadow: 0 4px 12px rgba(239, 68, 68, 0.15);
+    max-width: 100%;
+    animation: slideIn 0.3s ease-out;
+}
+
+.error-message h3 {
+    color: #991b1b;
+    font-size: clamp(14px, 3vw, 18px);
+    font-weight: 600;
+    margin: 0;
+    line-height: 1.5;
+    text-align: center;
+}
+
+@keyframes slideIn {
+    from {
+        opacity: 0;
+        transform: translateY(-10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@media (min-width: 768px) {
+    .error-message {
+        padding: 20px 24px;
+        border-radius: 14px;
+    }
+    
+    .error-message h3 {
+        font-size: clamp(16px, 2vw, 20px);
+    }
+}

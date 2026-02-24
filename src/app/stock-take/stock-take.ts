@@ -18,6 +18,7 @@ import { ChangeDetectorRef } from '@angular/core';
 
 import ExcelJS from 'exceljs';
 import { saveAs } from 'file-saver';
+import { UserService } from '../Services/user-service';
 
 interface todaysStockChangesTable {
   StockName?: string;
@@ -70,10 +71,13 @@ export class StockTakeClass implements OnInit {
   today = new Date();
   selectedDate: string = new Date().toISOString().split('T')[0];
 
-  // using the async pipe, loading is handled in the template
+  cachedUserNames: Record<number, string> = {};
+
+  //role variables
+  roleId!: number;
 
   constructor(private router: Router, private stockService: StockService, private stockTakeService: StockTakeService, private stockChangeService: StockChangeService,
-    @Inject(PLATFORM_ID) private platformId: object, private cdr: ChangeDetectorRef, private saleService: SaleService
+    @Inject(PLATFORM_ID) private platformId: object, private cdr: ChangeDetectorRef, private saleService: SaleService, private userService: UserService
   ) { }
 
   ngOnInit(): void {
@@ -81,6 +85,9 @@ export class StockTakeClass implements OnInit {
     if (!isPlatformBrowser(this.platformId)) {
       return;
     }
+
+    //quickly get users roleId
+    this.roleId = Number(localStorage.getItem('roleId'));
 
     // Expose the observable and let the template subscribe with the async pipe
     this.stock$ = this.stockService.getStock();
@@ -158,6 +165,13 @@ export class StockTakeClass implements OnInit {
       //   });
       // }
       this.getStockChangeNames();
+      
+      // Fetch all unique usernames once
+      const uniqueUserIds = [...new Set(this.currentStockChange.map(item => item.UserId))];
+      uniqueUserIds.forEach(userId => {
+        this.fetchUserName(userId);
+      });
+      
       this.cdr.detectChanges();
 
       console.log("Fetched stock change data in NgOnInIt:", this.currentStockChange);
@@ -201,10 +215,17 @@ export class StockTakeClass implements OnInit {
   getStockChangeNames() {
     let count = 0;
     for (let item of this.currentStockChange) {
-      this.stockService.getStockById(item.StockId).subscribe((data: Stock) => {
+      // this.stockService.getStockById(item.StockId).subscribe((data: Stock) => {
+      //   this.stockChangeNames[count] = data.stockName;
+      //   count++;
+      // });
+      this.stockService.getStockById(item.StockId).subscribe({
+      next: (data: Stock) => {        
         this.stockChangeNames[count] = data.stockName;
         count++;
-      });
+        this.cdr.detectChanges();
+      }
+    });
       // this.stockChangeNames[count] = 
     }
   }
@@ -276,7 +297,7 @@ export class StockTakeClass implements OnInit {
 
         this.stockAuditTrail.push({
           Id: this.stockAuditTrail.length + 1,
-          UserId: 1,
+          UserId: Number(localStorage.getItem('userId') ?? 0),
           StockId: this.selectedStockItem.id,
           ChangeType: this.changeType,
           Quantity: this.selectedQuantity,
@@ -285,7 +306,7 @@ export class StockTakeClass implements OnInit {
 
         var x: StockChange = {
           Id: 0,
-          UserId: 1,
+          UserId: Number(localStorage.getItem('userId') ?? 0),
           StockId: this.selectedStockItem.id,
           ChangeType: this.changeType,
           Quantity: this.selectedQuantity,
@@ -352,6 +373,12 @@ export class StockTakeClass implements OnInit {
       console.warn('UpdateStockTake called with undefined product at index', index, 'prod:', product);
       return;
     }
+
+    const currentUserId: number = Number(localStorage.getItem('userId') ?? 0);
+    if(currentUserId === 0) {
+      console.warn('No valid user ID found in localStorage');
+    }
+    product.UserId = currentUserId;
 
     product.Date = this.today;                //Need to update the date to the day when it was updated for auditing
 
@@ -478,6 +505,42 @@ export class StockTakeClass implements OnInit {
     saveAs(blob, `StockTake_${exportDate.toISOString().slice(0, 10)}.xlsx`);
   }
 
+  getUserNameById(userId: number): string {
+    return this.cachedUserNames[userId] || 'Loading...';
+  }
+
+  private fetchUserName(userId: number): void {
+    if (this.cachedUserNames[userId]) {
+      return; // Already cached
+    }
+
+    this.userService.getUserById(userId).subscribe({
+      next: (user) => {
+        this.cachedUserNames[userId] = user.username;
+        console.log("Fetched user name for ID", userId, ":", user.username);
+        this.cdr.detectChanges();
+      },
+      error: (error) => {
+        console.error('Error fetching user:', error);
+        this.cachedUserNames[userId] = 'Unknown User';
+      }
+    });
+  }
+
+  clickReceiveRemoveButton(modalType: string) {
+    if(this.roleId === 0){
+      alert("You do not have permission to perform stock adjustments");
+      return;
+    }
+
+    if(modalType === 'Received') {
+      this.changeType = 'Stock Received';
+    }
+    else if(modalType === 'Removed') {
+      this.changeType = 'Stock Removed';
+    }
+    this.showStockSelectModal = true;
+  }
 
 }
 

@@ -132,9 +132,9 @@
         <div class="stockButtons">
 
             <button class="stockActions" id="addButton"
-                (click)="showStockSelectModal = true; changeType = 'Stock Received'">Stock Received</button>
+                (click)="clickReceiveRemoveButton('Received')" >Stock Received</button>
             <button class="stockActions" id="removeButton"
-                (click)="showStockSelectModal = true; changeType = 'Stock Removed'">Stock Removed</button>
+                (click)="clickReceiveRemoveButton('Removed')" >Stock Removed</button>
 
             <input type="date" [(ngModel)]="selectedDate" class="date-picker" [disabled]="true">
             <button (click)="exportStockTableToExcel()" class="stockActions" style="color: black;">Export to Excel</button>
@@ -149,7 +149,7 @@
                         <!-- <th></th> -->
                         <th>Stock Name</th>
                         <th>Quantity</th>
-                        <th>UserID</th>
+                        <th>User</th>
                     </tr>
                 </thead>
 
@@ -159,7 +159,7 @@
                         <!-- <td>{{todaysStockChangesTable[i]?.StockName}}</td> -->
                         <td>{{stockChangeNames[i]}}</td>
                         <td>{{ item.ChangeType === 'Stock Removed' ? ('-' + item.Quantity) : item.Quantity }}</td>
-                        <td>{{item.UserId}}</td>
+                        <td>{{getUserNameById(item.UserId)}}</td>
                     </tr>
                 </tbody>
             </table>
