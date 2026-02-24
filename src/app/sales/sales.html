@@ -79,7 +79,7 @@
                         </tr>
 
                         <tr *ngFor="let item of group.items">
-                            <!-- <td>{{ item.SaleGroup }}</td> -->
+                            <td>-----------</td>
                             <td>{{ getStockNameById(item.StockId) }}</td>
                             <td>R{{ getStockById(item.StockId)?.price }}</td>
                             <td>{{ item.QuantitySold }}</td>

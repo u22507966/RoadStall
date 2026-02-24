@@ -160,22 +160,57 @@
 
 .unitButtons{
     display:flex;
-    gap:8px;
-    margin-top:12px;
+    gap:12px;
+    margin-top:24px;
+    padding-top: 20px;
+    border-top: 1px solid rgba(15,23,42,0.08);
     align-items:center;
+    justify-content: center;
 }
 
 .unitButtons input[type="number"]{
-    width: 140px;
+    flex: 1;
+    max-width: 200px;
+    padding: 12px 16px;
+    border: 2px solid rgba(15,23,42,0.12);
+    border-radius: 8px;
+    font-size: 1rem;
+    outline: none;
+    transition: all .2s ease;
+    background: #ffffff;
+}
+
+.unitButtons input[type="number"]:focus{
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px rgba(37,99,235,0.1);
+}
+
+.unitButtons input[type="number"]::placeholder{
+    color: var(--muted);
+    opacity: 0.6;
 }
 
 .unitButtons button{
-    padding: 8px 12px;
+    padding: 12px 24px;
     border-radius: 8px;
     border: none;
-    background: var(--accent);
+    background: linear-gradient(135deg, var(--accent), var(--accent-600));
     color: white;
+    font-weight: 600;
+    font-size: 1rem;
     cursor: pointer;
+    box-shadow: 0 4px 12px rgba(37,99,235,0.2);
+    transition: all .2s ease;
+}
+
+.unitButtons button:hover{
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(37,99,235,0.3);
+}
+
+.unitButtons button:active{
+    transform: translateY(0);
+    box-shadow: 0 2px 8px rgba(37,99,235,0.2);
 }
 
 .stockButtons{
