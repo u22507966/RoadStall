@@ -39,6 +39,8 @@ export class Login {
       return;
     }
 
+    this.successMessage = 'Please Wait...';
+
     localStorage.setItem('username', this.username);
     this.userService.getUserId(this.username).subscribe({
       next: (userId) => {
@@ -62,11 +64,12 @@ export class Login {
             this.goToDashboard();
           },
           error: (error: HttpErrorResponse) => {
-            if (error.status === 401) {
-              this.errorMessage = 'User not Authorized. Contact Administrator';
+            this.successMessage = '';
+            if (error.status === 401 || error.status === 400) {
+              this.errorMessage = error.error?.message || 'Invalid username or password';
             }
-            if (error.status === 400) {
-              this.errorMessage = 'Invalid username or password';
+            else{
+              this.errorMessage = 'An unexpected error occurred. Contact Administrator';
             }
             this.cdr.detectChanges();
           }
@@ -74,6 +77,9 @@ export class Login {
       },
       error: (error: HttpErrorResponse) => {
         console.error('Error fetching user ID:', error);
+        this.successMessage = '';
+        this.errorMessage = 'Invalid username or password';
+        this.cdr.detectChanges();
       }
     });
 
