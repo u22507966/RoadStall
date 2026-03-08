@@ -31,19 +31,30 @@
     justify-content:space-between;
     gap: 16px;
     margin-bottom: 18px;
+    border-top: 0.5px solid rgba(15,23,42,0.08);
+    border-bottom: 0.5px solid rgba(15,23,42,0.08);
+    background-color:rgba(15, 23, 42, 0.068);
+
 }
 
 .header h1{
     font-size: 1.4rem;
     margin: 0;
     font-weight: 600;
+    /* margin-right: 10px; */
+}
+
+.header h2{
+    margin-right: 10px;
 }
 
 .header button{
-    background: transparent;
-    border: 1px solid rgba(15,23,42,0.08);
-    color: var(--accent-600);
+    /* background: transparent; */
+    background: rgb(255, 0, 0);
+    border: 1px solid rgb(15, 23, 42);
+    color: white;
     padding: 8px 12px;
+    margin-left: 10px;
     border-radius: 8px;
     cursor: pointer;
     transition: all .15s ease-in-out;
@@ -80,6 +91,7 @@
     text-align: left;
     border-bottom: 1px solid rgba(15, 23, 42, 0.349);
     border-right: 1px solid rgba(15, 23, 42, 0.349);
+    border-left: 1px solid rgba(15, 23, 42, 0.349);
     vertical-align: middle;
 }
 
@@ -265,6 +277,18 @@
     margin-bottom: 16px;
     font-weight: 600;
     color: #1e293b;
+}
+
+/* Remove bold from first column in changes table */
+.stockTable.changes-table td:first-child {
+    font-weight: normal;
+}
+
+.stockTable.changes-table h2{
+    border-top: 0.5px solid rgba(15,23,42,0.08);
+    border-bottom: 0.5px solid rgba(15,23,42,0.08);
+    background-color:rgba(15, 23, 42, 0.068);
+    padding: 18px 18px;
 }
 
 /* Section borders for table rows */

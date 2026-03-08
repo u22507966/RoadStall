@@ -337,6 +337,13 @@ export class StockTakeClass implements OnInit {
               itemDate.getFullYear() === today.getFullYear();
           });
           this.getStockChangeNames();
+          
+          // Fetch all unique usernames again after refresh
+          const uniqueUserIds = [...new Set(this.currentStockChange.map(item => item.UserId))];
+          uniqueUserIds.forEach(userId => {
+            this.fetchUserName(userId);
+          });
+          
           setTimeout(() => {
             this.cdr.detectChanges();
           });

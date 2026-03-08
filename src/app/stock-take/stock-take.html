@@ -1,9 +1,9 @@
 <div class="stock-take-container">
 
     <div class="header">
+        <button (click)="goBackDashboard()">Back</button>
         <h1>Stock Take</h1>
         <h2>{{today | date:'dd/MM/yyyy'}}</h2>
-        <button (click)="goBackDashboard()">Back</button>
     </div>
 
     <div class="body">
@@ -141,8 +141,8 @@
 
         </div>
 
-        <div class="stockTable">
-            <h2 class="center-heading">Stock Channges For Today: {{today | date:'dd/MM/yyyy'}}</h2>
+        <div class="stockTable changes-table">
+            <h2 class="center-heading">Stock Changes For Today: {{today | date:'dd/MM/yyyy'}}</h2>
             <table>
                 <thead>
                     <tr>
