@@ -19,21 +19,24 @@
                 <div class="auth">
 
                     <h4>Authorization Status:</h4>
-                    <label class="switch">
-                        <input type="checkbox" [checked]="selectedUser.status == 1" (change)="onStatusChange($event)">
+                    <label class="switch" >
+                        <input type="checkbox" [checked]="selectedUser.status == 1" (change)="onStatusChange($event)" [disabled]="selectedUser.roleId === 2">
                         <span class="slider"></span>
                     </label>
+                    <p class="admin-tooltip" *ngIf="selectedUser.roleId === 2">Cannot change Status of administrator</p>
 
                 </div>
 
                 <div class="role">
 
                     <h4>Role:</h4>
-                    <select name="roles" id="roles" [value]="selectedUser.roleId" (change)="onRoleChange($event)">
+                    <select name="roles" id="roles" [(ngModel)]="selectedUser.roleId" (change)="onRoleChange($event)" [disabled]="selectedUser.roleId === 2">
                         <option [value]="1">Manager</option>
                         <option [value]="0">Employee</option>
                     </select>
+                    <p class="admin-tooltip" *ngIf="selectedUser.roleId === 2">Cannot change Role of administrator</p>
                 </div>
+                <!-- [value]="selectedUser.roleId" -->
 
             </div>
 

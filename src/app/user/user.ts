@@ -16,12 +16,20 @@ import { ChangeDetectorRef } from '@angular/core';
 
 export class User implements OnInit{
 
+  roleId!: number;
   Users: EditUser[] = [];
   selectedUser: EditUser | null = null;
 
   constructor(private userService: UserService, private cdr: ChangeDetectorRef) {}
 
   ngOnInit() {
+
+    this.roleId = Number(localStorage.getItem('roleId'));
+    if(this.roleId === 0){
+      alert("You do not have permission to access the Products page.");
+      window.location.href = '/dashboard';
+    }
+
     this.userService.getUsers().subscribe({
       next: (data) => {
         this.Users = data;
