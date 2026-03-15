@@ -1,0 +1,42 @@
+<div class="login-container">
+
+    <div class="nav-bar">
+        <button routerLink="/dashboard">Back</button>
+        <h1>Users</h1>
+        <h1></h1>
+    </div>
+
+    <div class="body">
+        <div class="user-dropdown">
+
+            <select name="users" id="users" [(ngModel)]="selectedUser">
+                <option [value]="null" disabled>Select a User..</option>
+                <option *ngFor="let user of Users" [ngValue]="user">{{ user.username }}</option>
+            </select>
+
+            <div class="attributes" *ngIf="selectedUser">
+
+                <div class="auth">
+
+                    <h4>Authorization Status:</h4>
+                    <label class="switch">
+                        <input type="checkbox" [checked]="selectedUser.status == 1" (change)="onStatusChange($event)">
+                        <span class="slider"></span>
+                    </label>
+
+                </div>
+
+                <div class="role">
+
+                    <h4>Role:</h4>
+                    <select name="roles" id="roles" [value]="selectedUser.roleId" (change)="onRoleChange($event)">
+                        <option [value]="1">Manager</option>
+                        <option [value]="0">Employee</option>
+                    </select>
+                </div>
+
+            </div>
+
+        </div>
+    </div>
+</div>

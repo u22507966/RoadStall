@@ -103,7 +103,7 @@ export class Login {
     this.userService.Register(registerRequest).subscribe({
       next: (response) => {
         console.log('Registration successful:', response);
-        this.successMessage = 'Registration successful! You can now log in.';
+        this.successMessage = 'Registration successful. Wait for authorization before logging in.';
         this.cdr.detectChanges();
       },
       error: (error: HttpErrorResponse) => {

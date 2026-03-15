@@ -11,7 +11,11 @@
     <button class="dashboard-btn primary" (click)="goToProducts()">Products</button>            
     <!-- routerLink="/products" -->
 
-    <button class="dashboard-btn primary" (click)="goBack()">Logout</button>
+    <button class="dashboard-btn primary" (click)="goToUsers()">Users</button>
+
+    <button class="dashboard-btn primary logout" (click)="goBack()">Logout</button>
+
+
 
 
     <div class="error-container" *ngIf="errorMessage">

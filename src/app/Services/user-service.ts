@@ -3,6 +3,7 @@ import { environment } from '../../environments/environment';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { RegisterRequest } from '../Models/RegisterRequest';
+import { EditUser } from '../Models/Dto/EditUser';
 
 export interface LoginRequest {
   username: string;
@@ -33,5 +34,17 @@ export class UserService {
 
   getUserById(id: number): Observable<any>{
     return this.http.get<any>(`${this.apiUrl}/${id}`);
+  }
+
+  getUsers(): Observable<EditUser[]>{
+    return this.http.get<EditUser[]>(`${this.apiUrl}`);
+  }
+
+  updateUserStatus(id: number, status: number): Observable<void>{
+    return this.http.patch<void>(`${this.apiUrl}/${id}/status`, status);
+  }
+
+  updateUserRole(id: number, roleId: number): Observable<void>{
+    return this.http.patch<void>(`${this.apiUrl}/${id}/role`, roleId);
   }
 }

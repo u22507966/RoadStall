@@ -3,8 +3,8 @@
     <div class="dropdown-with-delete">
         <div class="drop-down">
             <label for="products">Select Product:</label>
-            <select name="products" id="products" [(ngModel)]="selectedProductId">
-                <option *ngFor="let item of stock" [value]="item.id">{{ item.stockName }}
+            <select name="products" id="products" [(ngModel)]="selectedProduct">
+                <option *ngFor="let item of stock" [ngValue]="item" >{{ item.stockName }}
                 </option>
             </select>
         </div>
@@ -17,11 +17,12 @@
                 <line x1="14" y1="11" x2="14" y2="17"></line>
             </svg>
         </button>
+        <button (click)="isEditingProduct = true; isAddingProduct = false;">Edit</button>
     </div>
 
     <div class="buttons">
         <button routerLink="/dashboard">BACK</button>
-        <button (click)="isAddingProduct = true">Add Product</button>
+        <button (click)="isAddingProduct = true; isEditingProduct = false;">Add Product</button>
     </div>
 
 </div>
@@ -35,7 +36,21 @@
         <input type="number" id="productPrice" name="productPrice" required [(ngModel)]="newPrice">
 
         <button type="submit" [disabled]="!addProdForm.form.valid">Add Product</button>
-        <button (click)="isAddingProduct = false">Cancel</button>
+        <button (click)="isAddingProduct = false; isEditingProduct = false">Cancel</button>
+
+    </form>
+</div>
+
+<div class="editProduct" *ngIf="isEditingProduct && selectedProduct">
+    <form #editProdForm="ngForm" (ngSubmit)="editProduct()">
+        <label for="productName">Product Name:</label>
+        <input type="text" id="productName" name="productName" required [(ngModel)]="selectedProduct.stockName">
+
+        <label for="productPrice">Price:</label>
+        <input type="number" id="productPrice" name="productPrice" required [(ngModel)]="selectedProduct.price">
+
+        <button type="submit" [disabled]="!editProdForm.form.valid">Save Changes</button>
+        <button (click)="isAddingProduct = false; isEditingProduct = false">Cancel</button>
 
     </form>
 </div>
