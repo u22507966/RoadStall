@@ -136,7 +136,7 @@
             <button class="stockActions" id="removeButton"
                 (click)="clickReceiveRemoveButton('Removed')" >Stock Removed</button>
 
-            <input type="date" [(ngModel)]="selectedDate" class="date-picker" [disabled]="true">
+            <input type="date" [(ngModel)]="selectedDate" class="date-picker">
             <button (click)="exportStockTableToExcel()" class="stockActions" style="color: black;">Export to Excel</button>
 
         </div>

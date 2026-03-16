@@ -417,9 +417,6 @@ export class StockTakeClass implements OnInit {
   }
 
   async exportStockTableToExcel() {
-    const element = document.getElementById('stockTablePdf') as HTMLTableElement | null;
-    if (!element) return;
-
     // Helper to format date as dd/MM/YYYY
     const formatDate = (d: Date | string) => {
       const date = d instanceof Date ? d : new Date(d);
@@ -431,6 +428,21 @@ export class StockTakeClass implements OnInit {
 
     const dateStr = formatDate(this.selectedDate);
     const exportDate = new Date(this.selectedDate);
+    const today = new Date();
+    const isToday = exportDate.toDateString() === today.toDateString();
+
+    // If exporting today's data, use the DOM table (existing behavior)
+    if (isToday) {
+      await this.exportCurrentDayFromDOM(dateStr, exportDate);
+    } else {
+      // If exporting historical data, fetch from API
+      await this.exportHistoricalDataFromAPI(dateStr, exportDate);
+    }
+  }
+
+  private async exportCurrentDayFromDOM(dateStr: string, exportDate: Date) {
+    const element = document.getElementById('stockTablePdf') as HTMLTableElement | null;
+    if (!element) return;
 
     // Build table body from the rendered DOM table
     const rows = Array.from(element.querySelectorAll('tr'));
@@ -510,6 +522,179 @@ export class StockTakeClass implements OnInit {
     const buffer = await wb.xlsx.writeBuffer();
     const blob = new Blob([buffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
     saveAs(blob, `StockTake_${exportDate.toISOString().slice(0, 10)}.xlsx`);
+  }
+
+  private async exportHistoricalDataFromAPI(dateStr: string, exportDate: Date) {
+    try {
+      // Fetch historical data from API
+      const response = await this.stockTakeService.getHistoryExportData(exportDate.toISOString().split('T')[0]).toPromise();
+      
+      console.log('Full API Response:', JSON.stringify(response, null, 2));
+      
+      if (!response || !response.data || response.data.length === 0) {
+        alert(`No stock take data found for ${dateStr}`);
+        return;
+      }
+
+      const historyData = response.data;
+      console.log('History Data Array:', JSON.stringify(historyData, null, 2));
+      console.log('First Item:', historyData[0]);
+
+      // Helper to safely get property (try both PascalCase and camelCase)
+      const getProp = (obj: any, propName: string): any => {
+        if (obj[propName] !== undefined) return obj[propName];
+        const lowerProp = propName.charAt(0).toLowerCase() + propName.slice(1);
+        if (obj[lowerProp] !== undefined) return obj[lowerProp];
+        return null;
+      };
+
+      // Create workbook and worksheet
+      const wb = new ExcelJS.Workbook();
+      const ws = wb.addWorksheet('Stock Take');
+
+      // Add title and date at the top
+      ws.mergeCells('A1:D1');
+      const titleCell = ws.getCell('A1');
+      titleCell.value = 'Stock Take';
+      titleCell.font = { bold: true, size: 16 };
+      titleCell.alignment = { horizontal: 'center', vertical: 'middle' };
+
+      ws.mergeCells('A2:D2');
+      const dateCell = ws.getCell('A2');
+      dateCell.value = `Date: ${dateStr}`;
+      dateCell.font = { bold: true, size: 12 };
+      dateCell.alignment = { horizontal: 'center', vertical: 'middle' };
+
+      // Build table data array (matching the DOM table structure)
+      const tableData: any[][] = [];
+
+      // Row 1: Product names header
+      tableData.push(['', ...historyData.map((item: any) => {
+        const name = getProp(item, 'StockName');
+        console.log('Stock Name:', name);
+        return name || 'Unknown';
+      })]);
+
+      // Row 2: Prices
+      tableData.push(['Price', ...historyData.map((item: any) => {
+        const price = getProp(item, 'Price');
+        console.log('Price:', price);
+        return price ?? 0;
+      })]);
+
+      // Row 3: Opening Stock
+      tableData.push(['Opening Stock', ...historyData.map((item: any) => {
+        const opening = getProp(item, 'OpeningStock');
+        return opening ?? 0;
+      })]);
+
+      // Row 4: Stock Received header
+      tableData.push(['Stock Received', ...historyData.map(() => '')]);
+
+      // Row 5: Stock Received values (if any)
+      tableData.push(['', ...historyData.map((item: any) => {
+        const received = getProp(item, 'StockReceived');
+        return received > 0 ? `+${received}` : '';
+      })]);
+
+      // Row 6: Stock Removed header
+      tableData.push(['Stock Removed', ...historyData.map(() => '')]);
+
+      // Row 7: Stock Removed values (if any)
+      tableData.push(['', ...historyData.map((item: any) => {
+        const removed = getProp(item, 'StockRemoved');
+        return removed > 0 ? `-${removed}` : '';
+      })]);
+
+      // Row 8: Closing Stock
+      tableData.push(['Closing Stock', ...historyData.map((item: any) => {
+        const closing = getProp(item, 'ClosingStock');
+        return closing ?? 0;
+      })]);
+
+      // Row 9: Units Sold - from actual sales data in the API
+      tableData.push(['Units Sold', ...historyData.map((item: any) => {
+        const unitsSold = getProp(item, 'UnitsSold');
+        return unitsSold ?? 0;
+      })]);
+
+      // Row 10: Stock Left (calculated as: Closing)
+      tableData.push(['Stock Left', ...historyData.map((item: any) => {
+        const closing = getProp(item, 'ClosingStock');
+        return closing ?? 0;
+      })]);
+
+      console.log('Table Data:', tableData);
+
+      // Section row indices (for styling)
+      const sectionRows = [0, 1, 2, 3, 5, 7, 8, 9];
+
+      // Add table data starting from row 4
+      tableData.forEach((rowData, rowIndex) => {
+        const excelRow = ws.getRow(rowIndex + 4);
+        const isSectionRow = sectionRows.includes(rowIndex);
+        
+        rowData.forEach((cellValue, colIndex) => {
+          const cell = excelRow.getCell(colIndex + 1);
+          
+          // Handle value conversion
+          if (typeof cellValue === 'number') {
+            cell.value = cellValue;
+          } else if (typeof cellValue === 'string') {
+            const numValue = Number(cellValue);
+            cell.value = !isNaN(numValue) && cellValue !== '' ? numValue : cellValue;
+          } else {
+            cell.value = cellValue || '';
+          }
+          
+          // Style section rows (headers)
+          if (isSectionRow) {
+            cell.font = { bold: true };
+            if (colIndex === 0) {
+              cell.fill = {
+                type: 'pattern',
+                pattern: 'solid',
+                fgColor: { argb: 'FFF5F5F5' }
+              };
+            }
+          }
+          
+          // Add borders
+          cell.border = {
+            top: { style: 'thin' },
+            left: { style: 'thin' },
+            bottom: { style: 'thin' },
+            right: { style: 'thin' }
+          };
+          
+          cell.alignment = { horizontal: 'center', vertical: 'middle' };
+        });
+        
+        // Commit the row
+        excelRow.commit();
+      });
+
+      // Auto-size columns
+      ws.columns.forEach((column, idx) => {
+        if (column) {
+          let maxLength = 10;
+          column.eachCell?.({ includeEmpty: false }, (cell) => {
+            const cellValue = cell.value ? cell.value.toString() : '';
+            maxLength = Math.max(maxLength, cellValue.length);
+          });
+          column.width = Math.min(maxLength + 2, 30);
+        }
+      });
+
+      // Save file
+      const buffer = await wb.xlsx.writeBuffer();
+      const blob = new Blob([buffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
+      saveAs(blob, `StockTake_${exportDate.toISOString().slice(0, 10)}.xlsx`);
+
+    } catch (error) {
+      console.error('Error exporting historical data:', error);
+      alert(`Failed to export data for ${dateStr}. Please check the console for details.`);
+    }
   }
 
   getUserNameById(userId: number): string {
