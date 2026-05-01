@@ -2,32 +2,32 @@
     min-height: 100vh;
     display: flex;
     flex-direction: column;
-    align-items: stretch;
+    align-items: center;
     justify-content: center;
-    gap: 18px;
-    padding: 20px;
+    gap: 16px;
+    padding: 24px;
     box-sizing: border-box;
-    background: linear-gradient(180deg, #f7fbff 0%, #eef4fb 100%);
+    background: radial-gradient(circle at top, #f8fafc 0%, #eef2f7 45%, #e4eaf2 100%);
 }
 
 .dashboard-btn{
     -webkit-appearance: none;
     appearance: none;
-    border: none;
-    border-radius: 18px;
-    padding: 18px 22px;
+    border: 1px solid rgba(15, 23, 42, 0.08);
+    border-radius: 14px;
+    padding: 14px 20px;
     display: flex;
     align-items: center;
     justify-content: center;
-    width: 100%;
-    flex: 1 1 0;
-    min-height: 40px;
-    max-height: 80px;
-    color: #ffffff;
-    font-weight: 700;
-    font-size: clamp(20px, 4.5vw, 28px);
-    box-shadow: 0 10px 24px rgba(33,47,87,0.12), inset 0 -2px 0 rgba(0,0,0,0.05);
-    transition: transform .12s ease, box-shadow .12s ease, filter .12s ease;
+    width: min(520px, 100%);
+    min-height: 54px;
+    color: #0f172a;
+    font-weight: 600;
+    font-size: clamp(16px, 3.8vw, 20px);
+    letter-spacing: 0.2px;
+    background: #ffffff;
+    box-shadow: 0 12px 24px rgba(15, 23, 42, 0.08);
+    transition: transform 0.15s ease, box-shadow 0.15s ease, border-color 0.15s ease;
     cursor: pointer;
 }
 
@@ -36,53 +36,61 @@
 }
 
 .dashboard-btn.primary{
-    background: linear-gradient(90deg, #3b82f6 0%, #6366f1 100%);
+    background: linear-gradient(120deg, #0f172a 0%, #232e3d 100%, #334155 100%);
+    color: #f8fafc;
+    border-color: rgba(15, 23, 42, 0.2);
 }
 
 .dashboard-btn.secondary{
-    background: linear-gradient(90deg, #10b981 0%, #06b6d4 100%);
+    background: linear-gradient(120deg, #0f766e 0%, #0ea5a8 100%);
+    color: #ecfeff;
+    border-color: rgba(14, 116, 144, 0.25);
+}
+
+.dashboard-btn:hover{
+    transform: translateY(-1px);
+    box-shadow: 0 16px 30px rgba(15, 23, 42, 0.12);
+    border-color: rgba(15, 23, 42, 0.18);
 }
 
 .dashboard-btn:active{
-    transform: translateY(2px) scale(.998);
-    box-shadow: 0 6px 16px rgba(33,47,87,0.10);
+    transform: translateY(1px);
+    box-shadow: 0 8px 18px rgba(15, 23, 42, 0.1);
 }
 
 .dashboard-btn:focus{
     outline: none;
-    box-shadow: 0 0 0 4px rgba(99,102,241,0.14), 0 10px 24px rgba(33,47,87,0.12);
+    box-shadow: 0 0 0 3px rgba(14, 116, 144, 0.2), 0 12px 24px rgba(15, 23, 42, 0.12);
 }
 
-/* Layout tweaks for iPad and larger screens */
 @media (min-width: 768px) {
     .dashboard-container{
-        padding: 40px;
-        gap: 28px;
-        max-width: 900px;
-        margin: 0 auto;
+        padding: 48px;
+        gap: 20px;
     }
 
     .dashboard-btn{
-        border-radius: 22px;
-        min-height: 80px;
-        font-size: clamp(22px, 3.2vw, 34px);
+        min-height: 62px;
+        font-size: clamp(18px, 2.6vw, 22px);
     }
 }
 
-/* When the screen is tall (portrait phones), reduce min-height to avoid scrolling */
 @media (max-height: 700px) {
+    .dashboard-container{
+        padding-top: 16px;
+        padding-bottom: 16px;
+    }
+
     .dashboard-btn{
-        min-height: 110px;
+        min-height: 50px;
     }
 }
 
-/* Small screens: stack with slightly smaller padding */
 @media (max-width: 420px) {
-    .dashboard-container{ padding: 14px; gap: 12px; }
-    .dashboard-btn{ padding: 12px 16px; font-size: 18px; }
+    .dashboard-container{ padding: 16px; gap: 12px; }
+    .dashboard-btn{ padding: 12px 16px; font-size: 15px; }
 }
 
-/* Error message styling */
 .error-container {
     width: 100%;
     display: flex;
@@ -91,18 +99,18 @@
 }
 
 .error-message {
-    background: linear-gradient(135deg, #fee2e2 0%, #fecaca 100%);
-    border-left: 4px solid #ef4444;
+    background: #fff1f2;
+    border-left: 4px solid #f43f5e;
     border-radius: 12px;
     padding: 16px 20px;
-    box-shadow: 0 4px 12px rgba(239, 68, 68, 0.15);
-    max-width: 100%;
+    box-shadow: 0 6px 16px rgba(190, 18, 60, 0.12);
+    max-width: min(520px, 100%);
     animation: slideIn 0.3s ease-out;
 }
 
 .error-message h3 {
-    color: #991b1b;
-    font-size: clamp(14px, 3vw, 18px);
+    color: #9f1239;
+    font-size: clamp(13px, 3vw, 16px);
     font-weight: 600;
     margin: 0;
     line-height: 1.5;
@@ -127,6 +135,6 @@
     }
     
     .error-message h3 {
-        font-size: clamp(16px, 2vw, 20px);
+        font-size: clamp(14px, 2vw, 18px);
     }
 }

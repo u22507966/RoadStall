@@ -1,7 +1,11 @@
 <div class="drop-down-container">
+    
+    <div class="navbar">
+        <h1>Products</h1>
+    </div> 
 
     <div class="drop-down">
-        <label for="products">Select Product:</label>
+        <label for="products">Select Product to Delete:</label>
         <select name="products" id="products" [(ngModel)]="selectedProductId">
             <option *ngFor="let item of stock" [value]="item.id">{{ item.stockName }}
             </option>
@@ -9,7 +13,7 @@
     </div>
 
     <div class="buttons">
-        <button (click)="deleteProduct()">Delete</button>
+        <button class="delete-button" (click)="deleteProduct()">Delete</button>
         <button routerLink="/dashboard">BACK</button>
         <button (click)="isAddingProduct = true">Add Product</button>
     </div>
