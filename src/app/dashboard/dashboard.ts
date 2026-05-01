@@ -33,6 +33,16 @@ export class Dashboard {
 
     this.router.navigate(['/products']);
   }
+
+  goToUsers(){
+    if(this.roleId === 0){
+      this.errorMessage = 'You do not have permission to access the Users page.';
+      return;
+    }
+
+    this.router.navigate(['/user']);
+  }
+
   goBack() {
     this.router.navigate(['/login']);
   }

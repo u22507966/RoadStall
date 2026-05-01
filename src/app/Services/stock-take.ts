@@ -35,5 +35,10 @@ export class StockTakeService {
   createStockTake(stockTake: StockTake): Observable<any> {
     return this.http.post(this.apiUrl, stockTake);
   }
+
+  getHistoryExportData(date: string): Observable<any> {
+    const historyUrl = `${environment.apiUrl}/api/StockTakeHistory/export/${date}`;
+    return this.http.get<any>(historyUrl);
+  }
   
 }

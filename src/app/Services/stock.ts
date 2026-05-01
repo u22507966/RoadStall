@@ -33,5 +33,8 @@ export class StockService {
     return this.http.post<Stock>(this.apiUrl, newStock, { params: { userId: userId.toString() } });
   }
 
+  editStock( stockid: number, updatedStock: Stock): Observable<Stock> {
+    return this.http.put<Stock>(`${this.apiUrl}/${stockid}`, updatedStock, { params: { stockid: stockid.toString() } });
+  }
 
 }

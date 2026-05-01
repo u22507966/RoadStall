@@ -39,6 +39,8 @@ export class Login {
       return;
     }
 
+    this.successMessage = 'Please Wait... Initial Login May Take Up To 20 Seconds';
+
     localStorage.setItem('username', this.username);
     this.userService.getUserId(this.username).subscribe({
       next: (userId) => {
@@ -62,11 +64,12 @@ export class Login {
             this.goToDashboard();
           },
           error: (error: HttpErrorResponse) => {
-            if (error.status === 401) {
-              this.errorMessage = 'User not Authorized. Contact Administrator';
+            this.successMessage = '';
+            if (error.status === 401 || error.status === 400) {
+              this.errorMessage = error.error?.message || 'Invalid username or password';
             }
-            if (error.status === 400) {
-              this.errorMessage = 'Invalid username or password';
+            else{
+              this.errorMessage = 'An unexpected error occurred. Contact Administrator';
             }
             this.cdr.detectChanges();
           }
@@ -74,6 +77,9 @@ export class Login {
       },
       error: (error: HttpErrorResponse) => {
         console.error('Error fetching user ID:', error);
+        this.successMessage = '';
+        this.errorMessage = 'Invalid username or password';
+        this.cdr.detectChanges();
       }
     });
 
@@ -97,7 +103,7 @@ export class Login {
     this.userService.Register(registerRequest).subscribe({
       next: (response) => {
         console.log('Registration successful:', response);
-        this.successMessage = 'Registration successful! You can now log in.';
+        this.successMessage = 'Registration successful. Wait for authorization before logging in.';
         this.cdr.detectChanges();
       },
       error: (error: HttpErrorResponse) => {

@@ -20,9 +20,10 @@ export class Products implements OnInit {
 
   stock$: Observable<Stock[]>;
   stock: Stock[] = [];
-  selectedProductId: number | null = null;
+  selectedProduct: Stock | null = null;
 
   isAddingProduct: boolean = false;
+  isEditingProduct: boolean = false;
   newName: string = '';
   newPrice: number = 0;
   newProd!: Stock;
@@ -55,11 +56,17 @@ export class Products implements OnInit {
   }
 
   deleteProduct(){
-    if(this.selectedProductId !== null){
-      console.log("product id to delete:", this.selectedProductId);
-      this.stockService.deleteStock(this.selectedProductId).subscribe({
+    if(this.selectedProduct !== null){
+      const confirmed = confirm(`Are you sure you want to delete "${this.selectedProduct.stockName}"? This action cannot be undone.`);
+      
+      if(!confirmed){
+        return;
+      }
+
+      console.log("product id to delete:", this.selectedProduct.id);
+      this.stockService.deleteStock(this.selectedProduct.id).subscribe({
         next: () => {
-          console.log("Product deleted successfully:", this.selectedProductId);
+          console.log("Product deleted successfully:", this.selectedProduct);
           this.stockService.getStock().subscribe({
             next: (data) => {
               this.stock = data.map((item: any) => ({
@@ -80,6 +87,10 @@ export class Products implements OnInit {
         }
       });
     }
+
+    this.selectedProduct = null;
+    this.isEditingProduct = false;
+    this.isAddingProduct = false;
   }
 
   addProduct(){
@@ -122,6 +133,46 @@ export class Products implements OnInit {
     this.isAddingProduct = false;
     this.newName = '';
     this.newPrice = 0;
+  }
+
+  editProduct(){
+    if(this.selectedProduct === null){
+      alert("Please select a product to edit.");
+      return;
+    }
+
+    if(this.selectedProduct.stockName.trim() === '' || this.selectedProduct.price <= 0){
+      alert("Please enter a valid product name and price.");
+      return;
+    }
+
+    this.stockService.editStock(this.selectedProduct.id, this.selectedProduct).subscribe({
+      next: () => {
+        console.log("Product edited successfully:", this.selectedProduct);
+        this.stockService.getStock().subscribe({
+          next: (data) => {
+            this.stock = data.map((item: any) => ({
+              id: item.id ?? item.Id ?? item.ID,
+              stockName: item.stockName ?? item.StockName ?? item.stockname,
+              quantity: item.quantity ?? item.Quantity ?? item.quantity,
+              price: item.price ?? item.Price ?? item.price,
+            }));
+            this.cdr.detectChanges();
+          },
+          error: (err) => {
+            console.error("Error reloading stock:", err);
+          }
+        });
+      },
+      error: (err) => {
+        console.error("Error editing product:", err);
+      }
+    });
+
+    this.isEditingProduct = false;
+    this.isAddingProduct = false;
+    this.selectedProduct = null;
+
   }
 
 }
