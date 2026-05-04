@@ -568,6 +568,43 @@ export class StockTakeClass implements OnInit {
       // Build table data array (matching the DOM table structure)
       const tableData: any[][] = [];
 
+      // Parse received and removed entries for each product
+      const parsedData = historyData.map((item: any) => {
+        const receivedDisplay = getProp(item, 'StockReceivedDisplay') || '';
+        const removedDisplay = getProp(item, 'StockRemovedDisplay') || '';
+        
+        // Split by newline and parse to numbers
+        const receivedEntries = receivedDisplay
+          .split('\n')
+          .map((s: string) => s.trim())
+          .filter((s: string) => s)
+          .map((s: string) => {
+            const num = s.replace(/[+\-]/g, '').trim();
+            return num ? Number(num) : null;
+          })
+          .filter((n: number | null) => n !== null);
+        
+        const removedEntries = removedDisplay
+          .split('\n')
+          .map((s: string) => s.trim())
+          .filter((s: string) => s)
+          .map((s: string) => {
+            const num = s.replace(/[+\-]/g, '').trim();
+            return num ? Number(num) : null;
+          })
+          .filter((n: number | null) => n !== null);
+        
+        return {
+          ...item,
+          receivedEntries,
+          removedEntries
+        };
+      });
+
+      // Calculate max rows needed for received and removed
+      const maxReceivedRows = Math.max(0, ...parsedData.map((d: any) => d.receivedEntries.length));
+      const maxRemovedRows = Math.max(0, ...parsedData.map((d: any) => d.removedEntries.length));
+
       // Row 1: Product names header
       tableData.push(['', ...historyData.map((item: any) => {
         const name = getProp(item, 'StockName');
@@ -588,46 +625,54 @@ export class StockTakeClass implements OnInit {
         return opening ?? 0;
       })]);
 
-      // Row 4: Stock Received header
+      // Stock Received header
       tableData.push(['Stock Received', ...historyData.map(() => '')]);
 
-      // Row 5: Stock Received values (if any)
-      tableData.push(['', ...historyData.map((item: any) => {
-        const received = getProp(item, 'StockReceived');
-        return received > 0 ? `+${received}` : '';
-      })]);
+      // Stock Received individual rows
+      for (let i = 0; i < maxReceivedRows; i++) {
+        tableData.push(['', ...parsedData.map((item: any) => {
+          return item.receivedEntries[i] ?? '';
+        })]);
+      }
 
-      // Row 6: Stock Removed header
+      // Stock Removed header
       tableData.push(['Stock Removed', ...historyData.map(() => '')]);
 
-      // Row 7: Stock Removed values (if any)
-      tableData.push(['', ...historyData.map((item: any) => {
-        const removed = getProp(item, 'StockRemoved');
-        return removed > 0 ? `-${removed}` : '';
-      })]);
+      // Stock Removed individual rows
+      for (let i = 0; i < maxRemovedRows; i++) {
+        tableData.push(['', ...parsedData.map((item: any) => {
+          return item.removedEntries[i] ?? '';
+        })]);
+      }
 
-      // Row 8: Closing Stock
+      // Closing Stock
       tableData.push(['Closing Stock', ...historyData.map((item: any) => {
         const closing = getProp(item, 'ClosingStock');
         return closing ?? 0;
       })]);
 
-      // Row 9: Units Sold - from actual sales data in the API
+      // Units Sold - from actual sales data in the API
       tableData.push(['Units Sold', ...historyData.map((item: any) => {
         const unitsSold = getProp(item, 'UnitsSold');
         return unitsSold ?? 0;
       })]);
 
-      // Row 10: Stock Left (calculated as: Closing)
+      // Stock Left - from API
       tableData.push(['Stock Left', ...historyData.map((item: any) => {
-        const closing = getProp(item, 'ClosingStock');
-        return closing ?? 0;
+        const stockLeft = getProp(item, 'StockLeft');
+        return stockLeft ?? 0;
       })]);
 
       console.log('Table Data:', tableData);
 
-      // Section row indices (for styling)
-      const sectionRows = [0, 1, 2, 3, 5, 7, 8, 9];
+      // Section row indices (for styling) - dynamic based on maxReceivedRows and maxRemovedRows
+      const stockReceivedHeaderRow = 3;
+      const stockRemovedHeaderRow = 3 + maxReceivedRows + 1;
+      const closingStockRow = stockRemovedHeaderRow + maxRemovedRows + 1;
+      const unitsSoldRow = closingStockRow + 1;
+      const stockLeftRow = unitsSoldRow + 1;
+      
+      const sectionRows = [0, 1, 2, stockReceivedHeaderRow, stockRemovedHeaderRow, closingStockRow, unitsSoldRow, stockLeftRow];
 
       // Add table data starting from row 4
       tableData.forEach((rowData, rowIndex) => {
