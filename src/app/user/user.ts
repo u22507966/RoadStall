@@ -44,6 +44,11 @@ export class User implements OnInit{
     );
   }
 
+  onUserChange() {
+    // Force change detection when user is selected
+    this.cdr.detectChanges();
+  }
+
   onRoleChange(event: Event) {
     if(this.selectedUser?.roleId === 2){
       alert('Cannot change role of Admin');
