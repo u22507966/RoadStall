@@ -123,6 +123,7 @@
                         (click)="selectStockItem(stockitem, i); showQuantitySection = true">{{stockitem.stockName}}</button>
                 </div>
                 <div class="unitButtons" *ngIf="showQuantitySection">
+                    <h2 class="QuantitySectionHeader">Quantity:</h2>
                     <input type="number" placeholder="Enter quantity" [(ngModel)]="selectedQuantity">
                     <button (click)="saveStockChange()">Save</button>
                 </div>
