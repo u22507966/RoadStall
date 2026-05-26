@@ -99,7 +99,7 @@
                         <tr class="section-row section-row--start section-row--end">
                             <th>Stock Left</th>
                             <td *ngFor="let stockitem of currentStock">
-                                {{stockitem.quantity}}
+                                {{getStockLeft(stockitem.id)}}
                             </td>
                         </tr>
                     </tbody>

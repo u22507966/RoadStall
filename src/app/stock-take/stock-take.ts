@@ -6,7 +6,7 @@ import { Stock } from '../Models/stock';
 import { StockTake } from '../Models/stock-take';
 import { StockChange } from '../Models/stock-change';
 import { Sale } from '../Models/sale';
-import { OnInit } from '@angular/core';
+import { OnInit, OnDestroy } from '@angular/core';
 import { StockService } from '../Services/stock';
 import { StockTakeService } from '../Services/stock-take';
 import { StockChangeService } from '../Services/stock-change-service';
@@ -31,7 +31,7 @@ interface todaysStockChangesTable {
   templateUrl: './stock-take.html',
   styleUrl: './stock-take.css',
 })
-export class StockTakeClass implements OnInit {
+export class StockTakeClass implements OnInit, OnDestroy {
 
   // mockStock: Stock[] = [
   //   {StockItem: 'Litchi 2KG', Price: 70.00},
@@ -72,6 +72,9 @@ export class StockTakeClass implements OnInit {
   selectedDate: string = new Date().toISOString().split('T')[0];
 
   cachedUserNames: Record<number, string> = {};
+  
+  // Debounce timer for stock take updates
+  private updateTimers: Map<number, any> = new Map();
 
   //role variables
   roleId!: number;
@@ -190,6 +193,94 @@ export class StockTakeClass implements OnInit {
       this.cdr.detectChanges();
       console.log("Fetched sales data in NgOnInIt:", this.currentSales);
     });
+
+    // Add window focus listener to refresh data when tab becomes active
+    window.addEventListener('focus', this.onWindowFocus);
+  }
+
+  ngOnDestroy(): void {
+    // Clean up event listener to prevent memory leaks
+    if (isPlatformBrowser(this.platformId)) {
+      window.removeEventListener('focus', this.onWindowFocus);
+    }
+    
+    // Clear any pending update timers
+    this.updateTimers.forEach((timer) => clearTimeout(timer));
+    this.updateTimers.clear();
+  }
+
+  // Arrow function to maintain 'this' context
+  private onWindowFocus = (): void => {
+    console.log('Window focused - refreshing stock data...');
+    this.refreshAllData();
+  }
+
+  private refreshAllData(): void {
+    // Refresh stock data
+    this.stock$ = this.stockService.getStock();
+    this.stockService.getStock().subscribe((stockItems: Stock[]) => {
+      this.CurrentStock = stockItems;
+      this.cdr.detectChanges();
+    });
+
+    // Refresh stock take data
+    this.stockTakeService.getStockTake().subscribe((data: any[]) => {
+      this.StockTake = (data || []).map((item: any) => ({
+        ID: item.ID ?? item.id ?? item.Id ?? 0,
+        UserId: item.UserId ?? item.userId ?? item.user_id ?? 0,
+        StockId: item.StockId ?? item.stockId ?? item.StockID ?? item.stock_id ?? 0,
+        Date: new Date(item.Date ?? item.date ?? Date.now()),
+        OpeningStock: item.OpeningStock ?? item.openingStock ?? item.opening_stock ?? 0,
+        ClosingStock: item.ClosingStock ?? item.closingStock ?? item.closing_stock ?? 0,
+      }));
+      this.cdr.detectChanges();
+    });
+
+    // Refresh stock changes
+    this.stockChangeService.GetStockChange().subscribe((data: any[]) => {
+      this.currentStockChange = data.map((item: any) => ({
+        Id: item.Id ?? item.id ?? 0,
+        UserId: item.UserId ?? item.userId ?? 0,
+        StockId: item.StockId ?? item.stockId ?? 0,
+        ChangeType: item.ChangeType ?? item.changeType ?? '',
+        Quantity: item.Quantity ?? item.quantity ?? 0,
+        ChangeDate: new Date(item.ChangeDate ?? item.changeDate ?? Date.now()),
+        Adjustment: item.Adjustment ?? item.adjustment ?? 0,
+      }));
+      
+      // Filter to today's changes
+      this.currentStockChange = this.currentStockChange.filter(item => {
+        const itemDate = new Date(item.ChangeDate);
+        const today = new Date();
+        return itemDate.getDate() === today.getDate() &&
+          itemDate.getMonth() === today.getMonth() &&
+          itemDate.getFullYear() === today.getFullYear();
+      });
+      
+      this.getStockChangeNames();
+      
+      // Fetch usernames
+      const uniqueUserIds = [...new Set(this.currentStockChange.map(item => item.UserId))];
+      uniqueUserIds.forEach(userId => {
+        this.fetchUserName(userId);
+      });
+      
+      this.cdr.detectChanges();
+    });
+
+    // Refresh sales data and clear cache
+    this.unitsSoldByStockId = {};
+    this.saleService.getSales().subscribe((data: any[]) => {
+      this.currentSales = data.map((item: any) => ({
+        Id: item.Id ?? item.id ?? 0,
+        StockId: item.StockId ?? item.stockId ?? 0,
+        QuantitySold: item.Quantity ?? item.quantity ?? 0,
+        TotalPrice: item.TotalPrice ?? item.totalPrice ?? 0,
+        Date: new Date(item.SaleDate ?? item.saleDate ?? Date.now()),
+        SaleGroup: item.SaleGroup ?? item.saleGroup ?? '',
+      }));
+      this.cdr.detectChanges();
+    });
   }
 
   getUnitsSold(stockId: number): number {
@@ -263,6 +354,18 @@ export class StockTakeClass implements OnInit {
     return Array.from({ length: max }, (_, i) => i);
   }
 
+  // Calculate stock left based on opening stock, changes, and sales
+  getStockLeft(stockId: number): number {
+    const stockTakeEntry = this.StockTake.find(st => st.StockId === stockId);
+    if (!stockTakeEntry) return 0;
+    
+    const openingStock = stockTakeEntry.OpeningStock || 0;
+    const received = this.getReceivedChanges(stockId).reduce((sum, ch) => sum + ch.Quantity, 0);
+    const removed = this.getRemovedChanges(stockId).reduce((sum, ch) => sum + ch.Quantity, 0);
+    const unitsSold = this.getUnitsSold(stockId);
+    
+    return openingStock + received - removed - unitsSold;
+  }
 
   goBackDashboard(): void {
     this.router.navigate(['/dashboard']);
@@ -371,11 +474,6 @@ export class StockTakeClass implements OnInit {
 
   UpdateStockTake(index: number, product?: StockTake) {
 
-    // var findProd = this.StockTake[index];
-    // if (!product) {
-    //   product = findProd;
-    // }
-
     if (!product) {
       console.warn('UpdateStockTake called with undefined product at index', index, 'prod:', product);
       return;
@@ -391,27 +489,39 @@ export class StockTakeClass implements OnInit {
 
     const idForUrl = Number((product as any).ID ?? (product as any).Id ?? (product as any).id);
 
-    const payloadPascal: any = {
-      Id: idForUrl,
-      UserId: Number((product as any).UserId ?? 0),
-      StockId: Number((product as any).StockId ?? 0),
-      Date: this.today,                                               //product.Date ? (product.Date instanceof Date ? product.Date.toISOString() : new Date(product.Date).toISOString()) : null
-      OpeningStock: Number((product as any).OpeningStock ?? 0),
-      ClosingStock: Number((product as any).ClosingStock ?? 0),
-    };
+    // Clear existing timer for this product
+    if (this.updateTimers.has(idForUrl)) {
+      clearTimeout(this.updateTimers.get(idForUrl));
+    }
 
-    console.log('Sending PascalCase payload to API:', payloadPascal);
+    // Set new timer - only sends API request after 500ms of no changes
+    const timer = setTimeout(() => {
+      const payloadPascal: any = {
+        Id: idForUrl,
+        UserId: Number((product as any).UserId ?? 0),
+        StockId: Number((product as any).StockId ?? 0),
+        Date: this.today,                                               //product.Date ? (product.Date instanceof Date ? product.Date.toISOString() : new Date(product.Date).toISOString()) : null
+        OpeningStock: Number((product as any).OpeningStock ?? 0),
+        ClosingStock: Number((product as any).ClosingStock ?? 0),
+      };
 
-    this.stockTakeService.updateStockTake(product.ID, product).subscribe({
-      next: (response) => {
-        console.log('Stock take updated successfully:', response);
-        this.stock$ = this.stockService.getStock();
-        this.cdr.detectChanges();
-      },
-      error: (error) => {
-        console.error('Error updating stock take:', error);
-      }
-    });
+      console.log('Sending PascalCase payload to API:', payloadPascal);
+
+      this.stockTakeService.updateStockTake(product!.ID, product!).subscribe({
+        next: (response) => {
+          console.log('Stock take updated successfully:', response);
+          // No need to refresh stock data - only StockTake was updated
+          this.cdr.detectChanges();
+        },
+        error: (error) => {
+          console.error('Error updating stock take:', error);
+        }
+      });
+
+      this.updateTimers.delete(idForUrl);
+    }, 500); // Wait 500ms after user stops typing
+
+    this.updateTimers.set(idForUrl, timer);
 
     console.log('Current Stock Take Data:', this.StockTake);
   }
