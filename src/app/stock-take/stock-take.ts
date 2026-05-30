@@ -51,8 +51,9 @@ export class StockTakeClass implements OnInit, OnDestroy {
   stock$!: Observable<Stock[]>;
   CurrentStock: Stock[] = [];
 
-  stockTake$!: Observable<StockTake[]>;
+  // stockTake$!: Observable<StockTake[]>;
   StockTake: StockTake[] = [];
+  stockTakeByStockId: Record<number, StockTake> = {};
 
   currentStockChange: StockChange[] = [];
   stockChangeNames: string[] = [];
@@ -136,6 +137,11 @@ export class StockTakeClass implements OnInit, OnDestroy {
           const indexB = stockItems.findIndex(s => s.id === b.StockId);
           return indexA - indexB;
         });
+
+        this.stockTakeByStockId = this.StockTake.reduce((acc, item) => {
+          acc[item.StockId] = item;
+          return acc;
+        }, {} as Record<number, StockTake>);
 
         this.cdr.detectChanges();
         console.log("Fetched and mapped stock take data in NgOnInIt:", this.StockTake);
@@ -233,6 +239,10 @@ export class StockTakeClass implements OnInit, OnDestroy {
         OpeningStock: item.OpeningStock ?? item.openingStock ?? item.opening_stock ?? 0,
         ClosingStock: item.ClosingStock ?? item.closingStock ?? item.closing_stock ?? 0,
       }));
+      this.stockTakeByStockId = this.StockTake.reduce((acc, item) => {
+        acc[item.StockId] = item;
+        return acc;
+      }, {} as Record<number, StockTake>);
       this.cdr.detectChanges();
     });
 
@@ -472,12 +482,14 @@ export class StockTakeClass implements OnInit, OnDestroy {
     console.log("Sending stock updates to backend...", this.CurrentStock);
   }
 
-  UpdateStockTake(index: number, product?: StockTake) {
+  UpdateStockTake(product?: StockTake) {
 
     if (!product) {
-      console.warn('UpdateStockTake called with undefined product at index', index, 'prod:', product);
+      console.warn('UpdateStockTake called with undefined product', 'prod:', product);
       return;
     }
+
+    console.log("stockID For opening stock: " + product.StockId + " Full stocktake object: ", product);
 
     const currentUserId: number = Number(localStorage.getItem('userId') ?? 0);
     if(currentUserId === 0) {

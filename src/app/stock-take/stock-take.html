@@ -22,8 +22,11 @@
                         </tr>
                         <tr class="section-row section-row--start section-row--end">
                             <th>Opening Stock</th>
-                            <td *ngFor="let product of StockTake; let i = index"><input type="number"
-                                    [(ngModel)]="product.OpeningStock" (blur)="UpdateStockTake(i, product)">       <!--(ngModelChange)="UpdateStockTake(i, product)""-->
+                            <td *ngFor="let stockitem of currentStock">
+                                <ng-container *ngIf="stockTakeByStockId[stockitem.id] as product">
+                                    <input type="number" [(ngModel)]="product.OpeningStock"
+                                        (blur)="UpdateStockTake(product)">
+                                </ng-container>
                             </td>
                         </tr>
                         <!-- <tr>
@@ -86,8 +89,11 @@
 
                         <tr class="section-row section-row--start section-row--end">
                             <th>Closing Stock</th>
-                            <td *ngFor="let product of StockTake; let i = index"><input type="number"
-                                    [(ngModel)]="product.ClosingStock" (blur)="UpdateStockTake(i, product)">
+                            <td *ngFor="let stockitem of currentStock">
+                                <ng-container *ngIf="stockTakeByStockId[stockitem.id] as product">
+                                    <input type="number" [(ngModel)]="product.ClosingStock"
+                                        (blur)="UpdateStockTake(product)">
+                                </ng-container>
                             </td>
                         </tr>
                         <tr class="section-row section-row--start section-row--end">
