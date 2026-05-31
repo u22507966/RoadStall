@@ -2,6 +2,7 @@ import { Component } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
+import { firstValueFrom } from 'rxjs';
 import { Stock } from '../Models/stock';
 import { StockChange } from '../Models/stock-change';
 import { Sale } from '../Models/sale';
@@ -43,7 +44,7 @@ export class Sales implements OnInit {
   selectedProdNames: string[] = [];
 
   //variables for sales export function
-  selectedDate?: Date;
+  selectedDate: Date = new Date();
   exportSales: Sale[] = [];
 
   // Compute grand total from current in-progress sale items so it reflects
@@ -112,31 +113,35 @@ export class Sales implements OnInit {
 
   async exportDailySalesToExcel(): Promise<void> {
     const today = new Date(); //comparison variable
-    const day = this.selectedDate ? this.selectedDate.toString().slice(0, 10) : ''; //Gets '2026-05-30'
+    const todayStr = today.toISOString().slice(0, 10); // '2026-05-30'
+    const day = this.selectedDate.toString().slice(0, 10); //Gets '2026-05-30'
 
+    
     //Exporting for specified date
-    //this.selectedDate == undefined || this.selectedDate == null || this.selectedDate == today
-    // if (this.selectedDate! < today) {
-      this.saleService.exportSales(day).subscribe({
-        next: (data) => {
-          this.exportSales = data.map((item: any) => ({
-            Id: item.ID ?? item.saleId ?? 0,
-            StockId: item.StockId ?? item.stockId ?? 0,
-            QuantitySold: item.QuantitySold ?? item.quantitySold ?? 0,
-            TotalPrice: item.TotalPrice ?? item.totalPrice ?? 0,
-            Date: new Date(item.Date ?? item.date ?? Date.now()),
-            SaleGroup: item.SaleGroup ?? item.saleGroup ?? 0,
-          }));
-          console.log('Export sales response received.');
-          console.log('Sales to export:', this.exportSales);
-        },
-        error: (error) => {
-          console.error('Export sales failed:', error);
-        },
-      });
-    // }
-    console.log("Exporting sales for date:", this.selectedDate);
+    if(todayStr > day){
+      console.log('We are hitting the if statement')
+      try {     //Was having issue of subscribed data not being available when export function runs, so switched to firstValueFrom to await the data before proceeding with export logic
+        const data = await firstValueFrom(this.saleService.exportSales(day));
+        this.exportSales = data.map((item: any) => ({
+          Id: item.ID ?? item.saleId ?? 0,
+          StockId: item.StockId ?? item.stockId ?? 0,
+          QuantitySold: item.QuantitySold ?? item.quantitySold ?? 0,
+          TotalPrice: item.TotalPrice ?? item.totalPrice ?? 0,
+          Date: new Date(item.Date ?? item.date ?? Date.now()),
+          SaleGroup: item.SaleGroup ?? item.saleGroup ?? 0,
+        }));
+        console.log('All sales data in sales var: ', this.sales);
+        this.sales = this.exportSales;                             //Re-writing existing sales variable to exportSales   
+        this.groupSalesForTable();                                  //Have to group the data again.
+        console.log('Sales after setting to exportSales:', this.sales);
+      } catch (error) {
+        console.error('Export sales failed:', error);
+        return; // Exit early if the data fetch fails
+      }
+    }
 
+    // console.log('Sales after setting to exportSales and after subscribe:', this.sales);
+    
     // Ensure stock loaded (for names/prices)
     const products = [...this.currentStock];      //.sort((a, b) => a.stockName.localeCompare(b.stockName))
     if (products.length === 0) {
@@ -146,6 +151,7 @@ export class Sales implements OnInit {
 
     // Aggregate today's sales by product
     const byProduct = new Map<number, { qty: number; total: number }>();
+
     for (const s of this.sales) {
       const prev = byProduct.get(s.StockId) ?? { qty: 0, total: 0 };
       prev.qty += Number(s.QuantitySold ?? 0);
@@ -163,8 +169,8 @@ export class Sales implements OnInit {
     // Row 4: QTY/TOTAL subheaders
     // Rows 5..n: Sale groups
     // Last row: Subtotal per product + far-right TOTAL column
-
-    const dateStr = this.formatDate(new Date());
+    
+    const dateStr = day;                      //this.formatDate(new Date())
     const productCount = products.length;
     const firstProductCol = 2; // column A is labels
     const totalCol = firstProductCol + productCount * 2; // far-right TOTAL
@@ -345,7 +351,7 @@ export class Sales implements OnInit {
     const blob = new Blob([buffer], {
       type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
     });
-    saveAs(blob, `DailySales_${new Date().toISOString().slice(0, 10)}.xlsx`);
+    saveAs(blob, `DailySales_${this.selectedDate.toString().slice(0, 10)}.xlsx`);
   }
 
   getStockNames() {
