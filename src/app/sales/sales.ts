@@ -40,6 +40,7 @@ export class Sales implements OnInit {
   makingSale: boolean = false;
   numberOfProducts: number = 0;
   saleIdCounter: number = 1;
+  // today: string = new Date().toLocaleDateString('en-CA'); // Initialize with current date in 'yyyy-MM-dd' format
   today: Date = new Date();
   selectedProdNames: string[] = [];
 
@@ -56,7 +57,6 @@ export class Sales implements OnInit {
   //----------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
   ngOnInit(): void {
-    console.log("New date variable instantiated as: ", this.selectedDate);
     if (!isPlatformBrowser(this.platformId)) {
       return;
     }
