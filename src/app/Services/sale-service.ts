@@ -23,5 +23,9 @@ export class SaleService {
   getUnitsSold(stockId: number): Observable<number> {
     return this.http.get<number>(`${this.apiUrl}/unitsSold/${stockId}`);
   }
+
+  exportSales(date: string): Observable<Sale[]> {
+    return this.http.get<Sale[]>(`${this.apiUrl}/exportSales/${date}`);
+  }
   
 }

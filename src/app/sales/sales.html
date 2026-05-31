@@ -47,6 +47,7 @@
 
     <div class="header-2">
         <h1>Sales History For: {{today | date:'dd/MM/yyyy'}}</h1>
+        <input type="date" [(ngModel)]="selectedDate" class="date-picker">
         <button (click)="exportDailySalesToExcel()">Export to Excel</button>
     </div>
 

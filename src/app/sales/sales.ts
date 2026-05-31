@@ -42,6 +42,10 @@ export class Sales implements OnInit {
   today: Date = new Date();
   selectedProdNames: string[] = [];
 
+  //variables for sales export function
+  selectedDate?: Date;
+  exportSales: Sale[] = [];
+
   // Compute grand total from current in-progress sale items so it reflects
   // quantity edits immediately. Template binds to `grandTotal` so keep
   // the property name as a getter.
@@ -51,6 +55,7 @@ export class Sales implements OnInit {
   //----------------------------------------------------------------------------------------------------------------------------------------------------------------------
 
   ngOnInit(): void {
+    console.log("New date variable instantiated as: ", this.selectedDate);
     if (!isPlatformBrowser(this.platformId)) {
       return;
     }
@@ -106,6 +111,32 @@ export class Sales implements OnInit {
   }
 
   async exportDailySalesToExcel(): Promise<void> {
+    const today = new Date(); //comparison variable
+    const day = this.selectedDate ? this.selectedDate.toString().slice(0, 10) : ''; //Gets '2026-05-30'
+
+    //Exporting for specified date
+    //this.selectedDate == undefined || this.selectedDate == null || this.selectedDate == today
+    // if (this.selectedDate! < today) {
+      this.saleService.exportSales(day).subscribe({
+        next: (data) => {
+          this.exportSales = data.map((item: any) => ({
+            Id: item.ID ?? item.saleId ?? 0,
+            StockId: item.StockId ?? item.stockId ?? 0,
+            QuantitySold: item.QuantitySold ?? item.quantitySold ?? 0,
+            TotalPrice: item.TotalPrice ?? item.totalPrice ?? 0,
+            Date: new Date(item.Date ?? item.date ?? Date.now()),
+            SaleGroup: item.SaleGroup ?? item.saleGroup ?? 0,
+          }));
+          console.log('Export sales response received.');
+          console.log('Sales to export:', this.exportSales);
+        },
+        error: (error) => {
+          console.error('Export sales failed:', error);
+        },
+      });
+    // }
+    console.log("Exporting sales for date:", this.selectedDate);
+
     // Ensure stock loaded (for names/prices)
     const products = [...this.currentStock];      //.sort((a, b) => a.stockName.localeCompare(b.stockName))
     if (products.length === 0) {
@@ -331,11 +362,11 @@ export class Sales implements OnInit {
     return this.currentStock.find(s => s.id === stockId)?.stockName ?? '';
   }
 
-  getStockById(stockid: number): Stock | undefined{  
+  getStockById(stockid: number): Stock | undefined {
     return this.currentStock.find(s => s.id === stockid);
   }
 
-  getSales(){
+  getSales() {
     this.saleService.getSales().subscribe(data => {
       this.sales = data.map((item: any) => ({
         Id: item.ID ?? item.saleId ?? 0,
@@ -357,20 +388,20 @@ export class Sales implements OnInit {
   }
 
   groupSalesForTable() {
-  const map = new Map<number, Sale[]>();
+    const map = new Map<number, Sale[]>();
 
-  for (const sale of this.sales) {
-    if (!map.has(sale.SaleGroup)) map.set(sale.SaleGroup, []);
-    map.get(sale.SaleGroup)!.push(sale);
+    for (const sale of this.sales) {
+      if (!map.has(sale.SaleGroup)) map.set(sale.SaleGroup, []);
+      map.get(sale.SaleGroup)!.push(sale);
+    }
+
+    this.saleGroupingForTable = Array.from(map.entries()).map(([saleGroup, items]) => ({
+      saleGroup,
+      items,
+      grandTotal: items.reduce((sum, s) => sum + (s.TotalPrice || 0), 0),
+    }));
+    console.log('SaleGrouping Details:', this.saleGroupingForTable)
   }
-
-  this.saleGroupingForTable = Array.from(map.entries()).map(([saleGroup, items]) => ({
-    saleGroup,
-    items,
-    grandTotal: items.reduce((sum, s) => sum + (s.TotalPrice || 0), 0),
-  }));
-  console.log('SaleGrouping Details:', this.saleGroupingForTable)
-}
 
 
   goBackDashboard(): void {
