@@ -14,7 +14,7 @@ import { SaleService } from '../Services/sale-service';
 import { Observable } from 'rxjs';
 import { isPlatformBrowser } from '@angular/common';
 import { Inject, PLATFORM_ID } from '@angular/core';
-import { ChangeDetectorRef } from '@angular/core';
+import { ChangeDetectorRef, NgZone } from '@angular/core';
 
 import ExcelJS from 'exceljs';
 import { saveAs } from 'file-saver';
@@ -73,7 +73,10 @@ export class StockTakeClass implements OnInit, OnDestroy {
   selectedDate: string = new Date().toISOString().split('T')[0];
 
   cachedUserNames: Record<number, string> = {};
-  
+
+  //Export variables
+  exportErrorMessage: string = '';
+
   // Debounce timer for stock take updates
   private updateTimers: Map<number, any> = new Map();
 
@@ -81,7 +84,7 @@ export class StockTakeClass implements OnInit, OnDestroy {
   roleId!: number;
 
   constructor(private router: Router, private stockService: StockService, private stockTakeService: StockTakeService, private stockChangeService: StockChangeService,
-    @Inject(PLATFORM_ID) private platformId: object, private cdr: ChangeDetectorRef, private saleService: SaleService, private userService: UserService
+    @Inject(PLATFORM_ID) private platformId: object, private cdr: ChangeDetectorRef, private saleService: SaleService, private userService: UserService, private ngZone: NgZone
   ) { }
 
   ngOnInit(): void {
@@ -174,13 +177,13 @@ export class StockTakeClass implements OnInit, OnDestroy {
       //   });
       // }
       this.getStockChangeNames();
-      
+
       // Fetch all unique usernames once
       const uniqueUserIds = [...new Set(this.currentStockChange.map(item => item.UserId))];
       uniqueUserIds.forEach(userId => {
         this.fetchUserName(userId);
       });
-      
+
       this.cdr.detectChanges();
 
       console.log("Fetched stock change data in NgOnInIt:", this.currentStockChange);
@@ -194,7 +197,7 @@ export class StockTakeClass implements OnInit, OnDestroy {
         TotalPrice: item.TotalPrice ?? item.totalPrice ?? 0,
         Date: new Date(item.SaleDate ?? item.saleDate ?? Date.now()),
         SaleGroup: item.SaleGroup ?? item.saleGroup ?? '',
-        
+
       }));
       this.cdr.detectChanges();
       console.log("Fetched sales data in NgOnInIt:", this.currentSales);
@@ -209,7 +212,7 @@ export class StockTakeClass implements OnInit, OnDestroy {
     if (isPlatformBrowser(this.platformId)) {
       window.removeEventListener('focus', this.onWindowFocus);
     }
-    
+
     // Clear any pending update timers
     this.updateTimers.forEach((timer) => clearTimeout(timer));
     this.updateTimers.clear();
@@ -257,7 +260,7 @@ export class StockTakeClass implements OnInit, OnDestroy {
         ChangeDate: new Date(item.ChangeDate ?? item.changeDate ?? Date.now()),
         Adjustment: item.Adjustment ?? item.adjustment ?? 0,
       }));
-      
+
       // Filter to today's changes
       this.currentStockChange = this.currentStockChange.filter(item => {
         const itemDate = new Date(item.ChangeDate);
@@ -266,15 +269,15 @@ export class StockTakeClass implements OnInit, OnDestroy {
           itemDate.getMonth() === today.getMonth() &&
           itemDate.getFullYear() === today.getFullYear();
       });
-      
+
       this.getStockChangeNames();
-      
+
       // Fetch usernames
       const uniqueUserIds = [...new Set(this.currentStockChange.map(item => item.UserId))];
       uniqueUserIds.forEach(userId => {
         this.fetchUserName(userId);
       });
-      
+
       this.cdr.detectChanges();
     });
 
@@ -321,12 +324,12 @@ export class StockTakeClass implements OnInit, OnDestroy {
       //   count++;
       // });
       this.stockService.getStockById(item.StockId).subscribe({
-      next: (data: Stock) => {        
-        this.stockChangeNames[count] = data.stockName;
-        count++;
-        this.cdr.detectChanges();
-      }
-    });
+        next: (data: Stock) => {
+          this.stockChangeNames[count] = data.stockName;
+          count++;
+          this.cdr.detectChanges();
+        }
+      });
       // this.stockChangeNames[count] = 
     }
   }
@@ -368,12 +371,12 @@ export class StockTakeClass implements OnInit, OnDestroy {
   getStockLeft(stockId: number): number {
     const stockTakeEntry = this.StockTake.find(st => st.StockId === stockId);
     if (!stockTakeEntry) return 0;
-    
+
     const openingStock = stockTakeEntry.OpeningStock || 0;
     const received = this.getReceivedChanges(stockId).reduce((sum, ch) => sum + ch.Quantity, 0);
     const removed = this.getRemovedChanges(stockId).reduce((sum, ch) => sum + ch.Quantity, 0);
     const unitsSold = this.getUnitsSold(stockId);
-    
+
     return openingStock + received - removed - unitsSold;
   }
 
@@ -399,11 +402,11 @@ export class StockTakeClass implements OnInit, OnDestroy {
         // console.log('Fetched stock take for selected item:', stockTake);
         // console.log('ClosingStock value:', stockTake.ClosingStock);
         // console.log('Full stockTake object:', JSON.stringify(stockTake));
-        
+
         var isAdjustment = 0;
         // Backend sends closingStock with lowercase 'c'
         const closingStock = (stockTake as any).closingStock ?? stockTake.ClosingStock ?? 0;
-        if(closingStock > 0){
+        if (closingStock > 0) {
           isAdjustment = 1;
         }
         // console.log('isAdjustment value:', isAdjustment);
@@ -428,54 +431,56 @@ export class StockTakeClass implements OnInit, OnDestroy {
         }
 
         this.stockChangeService.PostStockChange(x).subscribe({
-      next: (response) => {
-        console.log('Stock change saved successfully:', response);
-        // Refresh data without hard reload
-        this.stock$ = this.stockService.getStock();
-        this.stockChangeService.GetStockChange().subscribe((data: any[]) => {
-          this.currentStockChange = data.map((item: any) => ({
-            Id: item.Id ?? item.id ?? 0,
-            UserId: item.UserId ?? item.userId ?? 0,
-            StockId: item.StockId ?? item.stockId ?? 0,
-            ChangeType: item.ChangeType ?? item.changeType ?? '',
-            Quantity: item.Quantity ?? item.quantity ?? 0,
-            ChangeDate: new Date(item.ChangeDate ?? item.changeDate ?? Date.now()),
-            Adjustment: item.Adjustment ?? item.adjustment ?? 0
-          }));
-          this.currentStockChange = this.currentStockChange.filter(item => {
-            const itemDate = new Date(item.ChangeDate);
-            const today = new Date();
-            return itemDate.getDate() === today.getDate() &&
-              itemDate.getMonth() === today.getMonth() &&
-              itemDate.getFullYear() === today.getFullYear();
-          });
-          this.getStockChangeNames();
-          
-          // Fetch all unique usernames again after refresh
-          const uniqueUserIds = [...new Set(this.currentStockChange.map(item => item.UserId))];
-          uniqueUserIds.forEach(userId => {
-            this.fetchUserName(userId);
-          });
-          
-          setTimeout(() => {
-            this.cdr.detectChanges();
-          });
+          next: (response) => {
+            console.log('Stock change saved successfully:', response);
+            // Refresh data without hard reload
+            this.stock$ = this.stockService.getStock();
+            this.stockChangeService.GetStockChange().subscribe((data: any[]) => {
+              this.currentStockChange = data.map((item: any) => ({
+                Id: item.Id ?? item.id ?? 0,
+                UserId: item.UserId ?? item.userId ?? 0,
+                StockId: item.StockId ?? item.stockId ?? 0,
+                ChangeType: item.ChangeType ?? item.changeType ?? '',
+                Quantity: item.Quantity ?? item.quantity ?? 0,
+                ChangeDate: new Date(item.ChangeDate ?? item.changeDate ?? Date.now()),
+                Adjustment: item.Adjustment ?? item.adjustment ?? 0
+              }));
+              this.currentStockChange = this.currentStockChange.filter(item => {
+                const itemDate = new Date(item.ChangeDate);
+                const today = new Date();
+                return itemDate.getDate() === today.getDate() &&
+                  itemDate.getMonth() === today.getMonth() &&
+                  itemDate.getFullYear() === today.getFullYear();
+              });
+              this.getStockChangeNames();
+
+              // Fetch all unique usernames again after refresh
+              const uniqueUserIds = [...new Set(this.currentStockChange.map(item => item.UserId))];
+              uniqueUserIds.forEach(userId => {
+                this.fetchUserName(userId);
+              });
+
+              setTimeout(() => {
+                this.cdr.detectChanges();
+              });
+            });
+
+            console.log("Stock change saved:", this.stockAuditTrail);
+            this.selectedQuantity = 0;
+          },
+          error: (error) => {
+            console.error('Error saving stock change:', error);
+          }
         });
-        
-        console.log("Stock change saved:", this.stockAuditTrail);
-        this.showStockSelectModal = false;
-        this.showQuantitySection = false;
-        this.selectedQuantity = 0;
-      },
-      error: (error) => {
-        console.error('Error saving stock change:', error);
-      }
-    });
       },
       error: (error) => {
         console.error('Error fetching stock take:', error);
       }
     });
+
+    this.showStockSelectModal = false;
+    this.showQuantitySection = false;
+
   } //save stock changes method
 
   sendUpdates() {
@@ -492,7 +497,7 @@ export class StockTakeClass implements OnInit, OnDestroy {
     console.log("stockID For opening stock: " + product.StockId + " Full stocktake object: ", product);
 
     const currentUserId: number = Number(localStorage.getItem('userId') ?? 0);
-    if(currentUserId === 0) {
+    if (currentUserId === 0) {
       console.warn('No valid user ID found in localStorage');
     }
     product.UserId = currentUserId;
@@ -602,7 +607,7 @@ export class StockTakeClass implements OnInit, OnDestroy {
         // Try to parse as number if possible
         const numValue = Number(cellValue);
         cell.value = !isNaN(numValue) && cellValue !== '' ? numValue : cellValue;
-        
+
         // Style section rows (headers)
         const domRow = rows[rowIndex];
         if (domRow.classList.contains('section-row')) {
@@ -615,7 +620,7 @@ export class StockTakeClass implements OnInit, OnDestroy {
             };
           }
         }
-        
+
         // Add borders
         cell.border = {
           top: { style: 'thin' },
@@ -623,7 +628,7 @@ export class StockTakeClass implements OnInit, OnDestroy {
           bottom: { style: 'thin' },
           right: { style: 'thin' }
         };
-        
+
         cell.alignment = { horizontal: 'center', vertical: 'middle' };
       });
     });
@@ -650,9 +655,9 @@ export class StockTakeClass implements OnInit, OnDestroy {
     try {
       // Fetch historical data from API
       const response = await this.stockTakeService.getHistoryExportData(exportDate.toISOString().split('T')[0]).toPromise();
-      
+
       console.log('Full API Response:', JSON.stringify(response, null, 2));
-      
+
       if (!response || !response.data || response.data.length === 0) {
         alert(`No stock take data found for ${dateStr}`);
         return;
@@ -694,7 +699,7 @@ export class StockTakeClass implements OnInit, OnDestroy {
       const parsedData = historyData.map((item: any) => {
         const receivedDisplay = getProp(item, 'StockReceivedDisplay') || '';
         const removedDisplay = getProp(item, 'StockRemovedDisplay') || '';
-        
+
         // Split by newline and parse to numbers
         const receivedEntries = receivedDisplay
           .split('\n')
@@ -705,7 +710,7 @@ export class StockTakeClass implements OnInit, OnDestroy {
             return num ? Number(num) : null;
           })
           .filter((n: number | null) => n !== null);
-        
+
         const removedEntries = removedDisplay
           .split('\n')
           .map((s: string) => s.trim())
@@ -715,7 +720,7 @@ export class StockTakeClass implements OnInit, OnDestroy {
             return num ? Number(num) : null;
           })
           .filter((n: number | null) => n !== null);
-        
+
         return {
           ...item,
           receivedEntries,
@@ -793,17 +798,17 @@ export class StockTakeClass implements OnInit, OnDestroy {
       const closingStockRow = stockRemovedHeaderRow + maxRemovedRows + 1;
       const unitsSoldRow = closingStockRow + 1;
       const stockLeftRow = unitsSoldRow + 1;
-      
+
       const sectionRows = [0, 1, 2, stockReceivedHeaderRow, stockRemovedHeaderRow, closingStockRow, unitsSoldRow, stockLeftRow];
 
       // Add table data starting from row 4
       tableData.forEach((rowData, rowIndex) => {
         const excelRow = ws.getRow(rowIndex + 4);
         const isSectionRow = sectionRows.includes(rowIndex);
-        
+
         rowData.forEach((cellValue, colIndex) => {
           const cell = excelRow.getCell(colIndex + 1);
-          
+
           // Handle value conversion
           if (typeof cellValue === 'number') {
             cell.value = cellValue;
@@ -813,7 +818,7 @@ export class StockTakeClass implements OnInit, OnDestroy {
           } else {
             cell.value = cellValue || '';
           }
-          
+
           // Style section rows (headers)
           if (isSectionRow) {
             cell.font = { bold: true };
@@ -825,7 +830,7 @@ export class StockTakeClass implements OnInit, OnDestroy {
               };
             }
           }
-          
+
           // Add borders
           cell.border = {
             top: { style: 'thin' },
@@ -833,10 +838,10 @@ export class StockTakeClass implements OnInit, OnDestroy {
             bottom: { style: 'thin' },
             right: { style: 'thin' }
           };
-          
+
           cell.alignment = { horizontal: 'center', vertical: 'middle' };
         });
-        
+
         // Commit the row
         excelRow.commit();
       });
@@ -858,9 +863,16 @@ export class StockTakeClass implements OnInit, OnDestroy {
       const blob = new Blob([buffer], { type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet' });
       saveAs(blob, `StockTake_${exportDate.toISOString().slice(0, 10)}.xlsx`);
 
-    } catch (error) {
-      console.error('Error exporting historical data:', error);
-      alert(`Failed to export data for ${dateStr}. Please check the console for details.`);
+    } catch (error: any) {
+
+      this.ngZone.run(() => {
+        this.exportErrorMessage = error.error?.message + ". Please select a new valid date to export.";
+        console.log(this.exportErrorMessage);
+        // Force Angular to detect the change
+        setTimeout(() => this.cdr.markForCheck(), 0);
+      });
+      return;
+
     }
   }
 
@@ -887,15 +899,15 @@ export class StockTakeClass implements OnInit, OnDestroy {
   }
 
   clickReceiveRemoveButton(modalType: string) {
-    if(this.roleId === 0){
+    if (this.roleId === 0) {
       alert("You do not have permission to perform stock adjustments");
       return;
     }
 
-    if(modalType === 'Received') {
+    if (modalType === 'Received') {
       this.changeType = 'Stock Received';
     }
-    else if(modalType === 'Removed') {
+    else if (modalType === 'Removed') {
       this.changeType = 'Stock Removed';
     }
     this.showStockSelectModal = true;

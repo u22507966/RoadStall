@@ -29,14 +29,6 @@
                                 </ng-container>
                             </td>
                         </tr>
-                        <!-- <tr>
-                            <th>Stock Received</th>
-                            <td *ngFor="let item of stock$ | async as currentStock"> {{getStockChangeById(item.id)}}</td>
-                        </tr>
-                        <tr>
-                            <th>Stock Removed</th>
-                            <td *ngFor="let item of stock$ | async as currentStock">{{getStockChangeById(item.id)}}</td>
-                        </tr> -->
                         <ng-container *ngIf="getReceivedRowCount(currentStock) as receivedRows">
                             <tr class="section-row section-row--start" [class.section-row--end]="receivedRows.length === 0">
                                 <th>Stock Received</th>
@@ -173,6 +165,12 @@
 
         </div>
 
+    </div>
+
+    <div *ngIf="exportErrorMessage" class="error-message-container" (click)="exportErrorMessage = ''">
+        <div class="error-message" (click)="$event.stopPropagation(); exportErrorMessage = ''">
+            {{ exportErrorMessage }}
+        </div>
     </div>
 
 </div>  
