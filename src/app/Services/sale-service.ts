@@ -27,5 +27,9 @@ export class SaleService {
   exportSales(date: string): Observable<Sale[]> {
     return this.http.get<Sale[]>(`${this.apiUrl}/exportSales/${date}`);
   }
+
+  getDates(): Observable<string[]> {
+    return this.http.get<string[]>(`${this.apiUrl}/getDates`);  //`, { params: { date } }
+  }
   
 }

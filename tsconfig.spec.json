@@ -4,6 +4,7 @@
   "extends": "./tsconfig.json",
   "compilerOptions": {
     "outDir": "./out-tsc/spec",
+    "rootDir": "./src",         //Added because of sudden error in this file
     "types": [
       "vitest/globals"
     ]

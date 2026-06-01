@@ -50,6 +50,9 @@ export class Sales implements OnInit {
   exportSales: Sale[] = [];
   exportErrorMessage: string = '';
 
+  historicalDates: string[] = [];
+  displayHistoryModal: boolean = false;
+
   // Compute grand total from current in-progress sale items so it reflects
   // quantity edits immediately. Template binds to `grandTotal` so keep
   // the property name as a getter.
@@ -120,9 +123,9 @@ export class Sales implements OnInit {
     const todayStr = today.toISOString().slice(0, 10); // '2026-05-30'
     //const day = this.selectedDate.toString().slice(0, 10); //Gets '2026-05-30'
     const day = this.selectedDate.toString();
-    
+
     //Exporting for specified date
-    if(todayStr > day){
+    if (todayStr > day) {
       console.log('We are hitting the if statement')
       try {     //Was having issue of subscribed data not being available when export function runs, so switched to firstValueFrom to await the data before proceeding with export logic
         const data = await firstValueFrom(this.saleService.exportSales(day));
@@ -134,10 +137,10 @@ export class Sales implements OnInit {
           Date: new Date(item.Date ?? item.date ?? Date.now()),
           SaleGroup: item.SaleGroup ?? item.saleGroup ?? 0,
         }));
-        console.log('All sales data in sales var: ', this.sales);
+        // console.log('All sales data in sales var: ', this.sales);
         this.sales = this.exportSales;                             //Re-writing existing sales variable to exportSales   
         this.groupSalesForTable();                                  //Have to group the data again.
-        console.log('Sales after setting to exportSales:', this.sales);
+        // console.log('Sales after setting to exportSales:', this.sales);
       } catch (error: any) {
         // console.error('Export sales failed:', error);
         this.ngZone.run(() => {
@@ -148,16 +151,16 @@ export class Sales implements OnInit {
         });
         return; // Exit early if the data fetch fails
       }
-      
+
     }
-    else if(todayStr < day){
+    else if (todayStr < day) {
       this.ngZone.run(() => {
         this.exportErrorMessage = "Selected date is in the future. Please select a valid date to export.";
         setTimeout(() => this.cdr.markForCheck(), 0);
       });
       return;
     }
-    
+
     // Ensure stock loaded (for names/prices)
     const products = [...this.currentStock];      //.sort((a, b) => a.stockName.localeCompare(b.stockName))
     if (products.length === 0) {
@@ -185,7 +188,7 @@ export class Sales implements OnInit {
     // Row 4: QTY/TOTAL subheaders
     // Rows 5..n: Sale groups
     // Last row: Subtotal per product + far-right TOTAL column
-    
+
     const dateStr = day;                      //this.formatDate(new Date())
     const productCount = products.length;
     const firstProductCol = 2; // column A is labels
@@ -476,5 +479,22 @@ export class Sales implements OnInit {
     this.sales = [...this.sales];
     this.groupSalesForTable();
   }
+
+  async viewHistoryDates() {
+    this.displayHistoryModal = true;
+    try {
+      const data = await firstValueFrom(this.saleService.getDates());
+      this.historicalDates = data;
+      this.cdr.detectChanges();
+    } catch (error: any) {
+      this.ngZone.run(() => {
+        this.exportErrorMessage = error.error.message;
+        setTimeout(() => this.cdr.markForCheck(), 0);
+      });
+      return;
+    }
+
+  }
+
 
 }

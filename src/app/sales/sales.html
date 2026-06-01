@@ -49,6 +49,7 @@
         <h1>Sales History For: {{today | date:'dd/MM/yyyy'}}</h1>
         <input type="date" [(ngModel)]="selectedDate" class="date-picker">
         <button (click)="exportDailySalesToExcel()">Export to Excel</button>
+        <button (click)="viewHistoryDates(); displayHistoryModal = true;">View History Dates</button>
     </div>
 
     <div class="body">
@@ -102,6 +103,14 @@
     <div *ngIf="exportErrorMessage" class="error-message-container" (click)="exportErrorMessage = ''">
         <div class="error-message" (click)="$event.stopPropagation(); exportErrorMessage = ''">
             {{ exportErrorMessage }}
+        </div>
+    </div>
+
+    <div class="display-history-dates" *ngIf="displayHistoryModal">
+        <div class="history-dates">
+            <ul>
+                <li *ngFor="let date of historicalDates" (click)="$event.stopPropagation()">{{ date | date:'yyyy/MM/dd'}}</li>
+            </ul>
         </div>
     </div>
 </div>

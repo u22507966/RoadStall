@@ -232,3 +232,28 @@
         transform: translateY(0);
     }
 }
+
+.display-history-dates {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0);
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    padding-top: 20px;
+    z-index: 9999;
+}
+
+.history-dates {
+    background: rgb(28, 90, 184);
+    color: white;
+    padding: 16px 24px;
+    border-radius: 8px;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+    max-width: 500px;
+    text-align: center;
+    animation: slideDown 0.3s ease-out;
+}
