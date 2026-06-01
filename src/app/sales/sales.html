@@ -99,4 +99,9 @@
 
     </div>
 
+    <div *ngIf="exportErrorMessage" class="error-message-container" (click)="exportErrorMessage = ''">
+        <div class="error-message" (click)="$event.stopPropagation(); exportErrorMessage = ''">
+            {{ exportErrorMessage }}
+        </div>
+    </div>
 </div>

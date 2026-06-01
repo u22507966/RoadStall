@@ -14,6 +14,7 @@ import ExcelJS from 'exceljs';
 import { saveAs } from 'file-saver';
 import { Inject, PLATFORM_ID } from '@angular/core';
 import { isPlatformBrowser } from '@angular/common';
+import { NgZone, ChangeDetectorRef } from '@angular/core';
 
 @Component({
   selector: 'app-sales',
@@ -47,6 +48,7 @@ export class Sales implements OnInit {
   //variables for sales export function
   selectedDate: Date = new Date();
   exportSales: Sale[] = [];
+  exportErrorMessage: string = '';
 
   // Compute grand total from current in-progress sale items so it reflects
   // quantity edits immediately. Template binds to `grandTotal` so keep
@@ -102,6 +104,8 @@ export class Sales implements OnInit {
     private saleService: SaleService,
     private stockService: StockService,
     @Inject(PLATFORM_ID) private platformId: object,
+    private ngZone: NgZone,
+    private cdr: ChangeDetectorRef
   ) { }
 
   private formatDate(d: Date): string {
@@ -114,8 +118,8 @@ export class Sales implements OnInit {
   async exportDailySalesToExcel(): Promise<void> {
     const today = new Date(); //comparison variable
     const todayStr = today.toISOString().slice(0, 10); // '2026-05-30'
-    const day = this.selectedDate.toString().slice(0, 10); //Gets '2026-05-30'
-
+    //const day = this.selectedDate.toString().slice(0, 10); //Gets '2026-05-30'
+    const day = this.selectedDate.toString();
     
     //Exporting for specified date
     if(todayStr > day){
@@ -134,13 +138,25 @@ export class Sales implements OnInit {
         this.sales = this.exportSales;                             //Re-writing existing sales variable to exportSales   
         this.groupSalesForTable();                                  //Have to group the data again.
         console.log('Sales after setting to exportSales:', this.sales);
-      } catch (error) {
-        console.error('Export sales failed:', error);
+      } catch (error: any) {
+        // console.error('Export sales failed:', error);
+        this.ngZone.run(() => {
+          this.exportErrorMessage = error.error + ". Please select a new valid date to export.";
+          console.log(this.exportErrorMessage);
+          // Force Angular to detect the change
+          setTimeout(() => this.cdr.markForCheck(), 0);
+        });
         return; // Exit early if the data fetch fails
       }
+      
     }
-
-    // console.log('Sales after setting to exportSales and after subscribe:', this.sales);
+    else if(todayStr < day){
+      this.ngZone.run(() => {
+        this.exportErrorMessage = "Selected date is in the future. Please select a valid date to export.";
+        setTimeout(() => this.cdr.markForCheck(), 0);
+      });
+      return;
+    }
     
     // Ensure stock loaded (for names/prices)
     const products = [...this.currentStock];      //.sort((a, b) => a.stockName.localeCompare(b.stockName))
