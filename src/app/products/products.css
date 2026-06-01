@@ -1,22 +1,24 @@
 :root {
-    --bg: #f5f7fb;
-    --card: #ffffff;
-    --muted: #6b7280;
-    --accent: #2563eb;
-    --accent-600: #1e40af;
-    --shadow: 0 6px 18px rgba(22, 29, 73, 0.08);
-    --radius: 10px;
+    --bg: #F4F6F4;
+    --card: #FFFFFF;
+    --forest-green: #1E3F20;
+    --carrot-orange: #E67E22;
+    --crimson-red: #C0392B;
+    --fresh-green: #27AE60;
+    --shadow: 0 4px 12px rgba(30, 63, 32, 0.1);
+    --radius: 8px;
 }
 
 .drop-down-container {
     max-width: 500px;
     margin: 60px auto;
     padding: 32px;
-    background: linear-gradient(180deg, rgba(255,255,255,0.6), rgba(250,251,255,0.6));
+    background: #FFFFFF;
     border-radius: var(--radius);
     box-shadow: var(--shadow);
-    font-family: Inter, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;
-    color: #0f172a;
+    font-family: 'Segoe UI', -apple-system, Roboto, 'Helvetica Neue', Arial;
+    color: var(--forest-green);
+    border: 1px solid rgba(30, 63, 32, 0.1);
 }
 
 .dropdown-with-delete {
@@ -38,25 +40,25 @@
 .drop-down label {
     font-size: 0.95rem;
     font-weight: 600;
-    color: var(--muted);
+    color: var(--forest-green);
 }
 
 .drop-down select {
     width: 100%;
     padding: 12px 14px;
     font-size: 1rem;
-    border: 1px solid rgba(15, 23, 42, 0.2);
-    border-radius: 8px;
-    background: var(--card);
-    color: #0f172a;
+    border: 2px solid rgba(30, 63, 32, 0.2);
+    border-radius: 6px;
+    background: #FFFFFF;
+    color: var(--forest-green);
     outline: none;
-    transition: all 0.15s ease;
+    transition: all 0.2s ease;
     cursor: pointer;
 }
 
 .drop-down select:focus {
-    border-color: var(--accent);
-    box-shadow: 0 4px 14px rgba(37, 99, 235, 0.12);
+    border-color: var(--carrot-orange);
+    box-shadow: 0 0 0 3px rgba(230, 126, 34, 0.1);
 }
 
 .delete-btn {
@@ -64,20 +66,20 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    border: 1px solid #dc2626;
-    border-radius: 8px;
-    background: #fef2f2;
-    color: #dc2626;
+    border: none;
+    border-radius: 6px;
+    background: var(--crimson-red);
+    color: #FFFFFF;
     cursor: pointer;
-    transition: all 0.15s ease-in-out;
+    transition: all 0.2s ease;
     min-height: 46px;
+    box-shadow: 0 4px 12px rgba(192, 57, 43, 0.3);
 }
 
 .delete-btn:hover {
-    background: #dc2626;
-    color: white;
-    transform: translateY(-1px);
-    box-shadow: 0 4px 12px rgba(220, 38, 38, 0.2);
+    background: #A93226;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(192, 57, 43, 0.4);
 }
 
 .delete-btn:active {
@@ -91,20 +93,21 @@
 .dropdown-with-delete button:not(.delete-btn) {
     padding: 12px 20px;
     font-size: 0.95rem;
-    font-weight: 500;
-    border: 1px solid rgba(15, 23, 42, 0.2);
-    border-radius: 8px;
+    font-weight: 600;
+    border: none;
+    border-radius: 6px;
     cursor: pointer;
-    transition: all 0.15s ease-in-out;
-    background: var(--card);
-    color: var(--accent-600);
+    transition: all 0.2s ease;
+    background: var(--forest-green);
+    color: #FFFFFF;
     min-height: 46px;
+    box-shadow: 0 4px 12px rgba(30, 63, 32, 0.3);
 }
 
 .dropdown-with-delete button:not(.delete-btn):hover {
-    background: rgba(37, 99, 235, 0.06);
-    border-color: var(--accent);
-    transform: translateY(-1px);
+    background: #16311A;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(30, 63, 32, 0.4);
 }
 
 .dropdown-with-delete button:not(.delete-btn):active {
@@ -118,35 +121,53 @@
 }
 
 .buttons button {
-    padding: 10px 20px;
+    padding: 12px 24px;
     font-size: 0.95rem;
-    font-weight: 500;
-    border: 1px solid rgba(15, 23, 42, 0.08);
-    border-radius: 8px;
+    font-weight: 600;
+    border: none;
+    border-radius: 6px;
     cursor: pointer;
-    transition: all 0.15s ease-in-out;
-    background: transparent;
-    color: var(--accent-600);
+    transition: all 0.2s ease;
+    box-shadow: 0 4px 12px rgba(30, 63, 32, 0.3);
 }
 
-.buttons button:hover {
-    background: rgba(37, 99, 235, 0.06);
-    transform: translateY(-1px);
+.buttons button:first-child {
+    background: #6C757D;
+    color: #FFFFFF;
+}
+
+.buttons button:first-child:hover {
+    background: #5A6268;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(108, 117, 125, 0.4);
+}
+
+.buttons button:last-child {
+    background: var(--carrot-orange);
+    color: #FFFFFF;
+}
+
+.buttons button:last-child:hover {
+    background: #D35400;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(230, 126, 34, 0.4);
 }
 
 .buttons button:active {
     transform: translateY(0);
 }
 
+/* Add Product Form */
 .addProduct {
     max-width: 500px;
     margin: 24px auto;
     padding: 32px;
-    background: linear-gradient(180deg, rgba(255,255,255,0.6), rgba(250,251,255,0.6));
+    background: #FFFFFF;
     border-radius: var(--radius);
     box-shadow: var(--shadow);
-    font-family: Inter, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;
-    color: #0f172a;
+    font-family: 'Segoe UI', -apple-system, Roboto, 'Helvetica Neue', Arial;
+    color: var(--forest-green);
+    border: 1px solid rgba(30, 63, 32, 0.1);
 }
 
 .addProduct form {
@@ -158,7 +179,7 @@
 .addProduct label {
     font-size: 0.95rem;
     font-weight: 600;
-    color: var(--muted);
+    color: var(--forest-green);
     margin-bottom: -8px;
 }
 
@@ -167,36 +188,52 @@
     width: 100%;
     padding: 12px 14px;
     font-size: 1rem;
-    border: 1px solid rgba(15, 23, 42, 0.2);
-    border-radius: 8px;
-    background: var(--card);
-    color: #0f172a;
+    border: 2px solid rgba(30, 63, 32, 0.2);
+    border-radius: 6px;
+    background: #FFFFFF;
+    color: var(--forest-green);
     outline: none;
-    transition: all 0.15s ease;
+    transition: all 0.2s ease;
     box-sizing: border-box;
 }
 
 .addProduct input:focus {
-    border-color: var(--accent);
-    box-shadow: 0 4px 14px rgba(37, 99, 235, 0.12);
+    border-color: var(--carrot-orange);
+    box-shadow: 0 0 0 3px rgba(230, 126, 34, 0.1);
 }
 
 .addProduct button {
-    padding: 10px 20px;
+    padding: 12px 20px;
     font-size: 0.95rem;
-    font-weight: 500;
-    border: 1px solid rgba(15, 23, 42, 0.08);
-    border-radius: 8px;
+    font-weight: 600;
+    border: none;
+    border-radius: 6px;
     cursor: pointer;
-    transition: all 0.15s ease-in-out;
-    background: transparent;
-    color: var(--accent-600);
+    transition: all 0.2s ease;
     margin-top: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 }
 
-.addProduct button:hover:not(:disabled) {
-    background: rgba(37, 99, 235, 0.06);
-    transform: translateY(-1px);
+.addProduct button[type="submit"] {
+    background: var(--carrot-orange);
+    color: #FFFFFF;
+}
+
+.addProduct button[type="submit"]:hover:not(:disabled) {
+    background: #D35400;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(230, 126, 34, 0.4);
+}
+
+.addProduct button:not([type="submit"]) {
+    background: #6C757D;
+    color: #FFFFFF;
+}
+
+.addProduct button:not([type="submit"]):hover {
+    background: #5A6268;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(108, 117, 125, 0.4);
 }
 
 .addProduct button:active:not(:disabled) {
@@ -206,27 +243,20 @@
 .addProduct button:disabled {
     opacity: 0.5;
     cursor: not-allowed;
+    background: #95A5A6;
 }
 
-.addProduct button[type="submit"] {
-    background: var(--accent);
-    color: rgb(0, 0, 0);
-    border-color: var(--accent);
-}
-
-.addProduct button[type="submit"]:hover:not(:disabled) {
-    background: var(--accent-600);
-}
-
+/* Edit Product Form */
 .editProduct {
     max-width: 500px;
     margin: 24px auto;
     padding: 32px;
-    background: linear-gradient(180deg, rgba(255,255,255,0.6), rgba(250,251,255,0.6));
+    background: #FFFFFF;
     border-radius: var(--radius);
     box-shadow: var(--shadow);
-    font-family: Inter, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;
-    color: #0f172a;
+    font-family: 'Segoe UI', -apple-system, Roboto, 'Helvetica Neue', Arial;
+    color: var(--forest-green);
+    border: 1px solid rgba(30, 63, 32, 0.1);
 }
 
 .editProduct form {
@@ -238,7 +268,7 @@
 .editProduct label {
     font-size: 0.95rem;
     font-weight: 600;
-    color: var(--muted);
+    color: var(--forest-green);
     margin-bottom: -8px;
 }
 
@@ -247,36 +277,52 @@
     width: 100%;
     padding: 12px 14px;
     font-size: 1rem;
-    border: 1px solid rgba(15, 23, 42, 0.2);
-    border-radius: 8px;
-    background: var(--card);
-    color: #0f172a;
+    border: 2px solid rgba(30, 63, 32, 0.2);
+    border-radius: 6px;
+    background: #FFFFFF;
+    color: var(--forest-green);
     outline: none;
-    transition: all 0.15s ease;
+    transition: all 0.2s ease;
     box-sizing: border-box;
 }
 
 .editProduct input:focus {
-    border-color: var(--accent);
-    box-shadow: 0 4px 14px rgba(37, 99, 235, 0.12);
+    border-color: var(--carrot-orange);
+    box-shadow: 0 0 0 3px rgba(230, 126, 34, 0.1);
 }
 
 .editProduct button {
-    padding: 10px 20px;
+    padding: 12px 20px;
     font-size: 0.95rem;
-    font-weight: 500;
-    border: 1px solid rgba(15, 23, 42, 0.08);
-    border-radius: 8px;
+    font-weight: 600;
+    border: none;
+    border-radius: 6px;
     cursor: pointer;
-    transition: all 0.15s ease-in-out;
-    background: transparent;
-    color: var(--accent-600);
+    transition: all 0.2s ease;
     margin-top: 8px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 }
 
-.editProduct button:hover:not(:disabled) {
-    background: rgba(37, 99, 235, 0.06);
-    transform: translateY(-1px);
+.editProduct button[type="submit"] {
+    background: var(--carrot-orange);
+    color: #FFFFFF;
+}
+
+.editProduct button[type="submit"]:hover:not(:disabled) {
+    background: #D35400;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(230, 126, 34, 0.4);
+}
+
+.editProduct button:not([type="submit"]) {
+    background: #6C757D;
+    color: #FFFFFF;
+}
+
+.editProduct button:not([type="submit"]):hover {
+    background: #5A6268;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(108, 117, 125, 0.4);
 }
 
 .editProduct button:active:not(:disabled) {
@@ -286,14 +332,5 @@
 .editProduct button:disabled {
     opacity: 0.5;
     cursor: not-allowed;
-}
-
-.editProduct button[type="submit"] {
-    background: var(--accent);
-    color: rgb(0, 0, 0);
-    border-color: var(--accent);
-}
-
-.editProduct button[type="submit"]:hover:not(:disabled) {
-    background: var(--accent-600);
+    background: #95A5A6;
 }

@@ -1,24 +1,24 @@
 :root {
-    --bg: #f5f7fb;
-    --card: #ffffff;
-    --muted: #6b7280;
-    --accent: #2563eb;
-    --accent-600: #1e40af;
-    --shadow: 0 6px 18px rgba(22, 29, 73, 0.08);
-    --radius: 10px;
+    --bg: #F4F6F4;
+    --card: #FFFFFF;
+    --forest-green: #1E3F20;
+    --carrot-orange: #E67E22;
+    --crimson-red: #C0392B;
+    --fresh-green: #27AE60;
+    --shadow: 0 4px 12px rgba(30, 63, 32, 0.1);
+    --radius: 8px;
 }
 
 .sales-container {
     max-width: 820px;
-    /* fits iPad portrait comfortably */
     margin: 28px auto;
     padding: 20px;
-    background: linear-gradient(180deg, rgba(255, 255, 255, 0.6), rgba(209, 215, 245, 0.295));
-    border-radius: 5px;
-    border: 1px solid rgba(15, 23, 42, 0.06);
+    background: #FFFFFF;
+    border-radius: var(--radius);
+    border: 1px solid rgba(30, 63, 32, 0.1);
     box-shadow: var(--shadow);
-    font-family: Inter, -apple-system, 'Segoe UI', Roboto, 'Helvetica Neue', Arial;
-    color: #0f172a;
+    font-family: 'Segoe UI', -apple-system, Roboto, 'Helvetica Neue', Arial;
+    color: var(--forest-green);
 }
 
 .header {
@@ -27,28 +27,34 @@
     justify-content: space-between;
     gap: 12px;
     margin-bottom: 16px;
+    padding: 16px;
+    background: var(--forest-green);
+    border-radius: var(--radius) var(--radius) 0 0;
+    margin: -20px -20px 16px -20px;
 }
 
 .header h1 {
     font-size: 1.4rem;
     margin: 0;
     font-weight: 600;
+    color: #FFFFFF;
 }
 
 .header button {
-    background: rgb(255, 0, 0);
-    border: 1px solid rgb(15, 23, 42);
-    color: white;
-    padding: 8px 12px;
-    margin-left: 10px;
-    border-radius: 8px;
+    background: var(--crimson-red);
+    border: none;
+    color: #FFFFFF;
+    padding: 10px 16px;
+    border-radius: 6px;
     cursor: pointer;
-    transition: all .15s ease-in-out;
+    transition: all .2s ease;
+    font-weight: 600;
 }
 
 .header button:hover {
-    /* background: rgba(37, 99, 235, 0.06); */
-    transform: translateY(-1px);
+    background: #A93226;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(192, 57, 43, 0.3);
 }
 
 .header-2 {
@@ -57,6 +63,9 @@
     display: flex;
     flex-wrap: wrap;
     justify-content: center;
+    padding: 16px;
+    background: rgba(30, 63, 32, 0.05);
+    border-radius: var(--radius);
 }
 
 .header-2 h1 {
@@ -65,31 +74,46 @@
     margin: 0 0 12px 0;
     font-weight: 600;
     text-align: center;
+    color: var(--forest-green);
 }
 
 .header-2 input[type="date"] {
     margin-left: auto;
     margin-right: 8px;
-    padding: 8px 12px;
+    padding: 10px 14px;
     border-radius: 6px;
-    border: 1px solid rgba(15, 23, 42, 0.2);
+    border: 2px solid rgba(30, 63, 32, 0.2);
+    background: #FFFFFF;
+    color: var(--forest-green);
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.header-2 input[type="date"]:focus {
+    outline: none;
+    border-color: var(--carrot-orange);
+    box-shadow: 0 0 0 3px rgba(230, 126, 34, 0.1);
 }
 
 .header-2 button {
     position: static;
     transform: none;
-    background: transparent;
-    border: 1px solid rgba(15, 23, 42, 0.08);
-    color: var(--accent-600);
-    padding: 8px 12px;
-    border-radius: 8px;
+    background: var(--forest-green);
+    border: none;
+    color: #FFFFFF;
+    padding: 10px 16px;
+    border-radius: 6px;
     cursor: pointer;
-    transition: all .15s ease-in-out;
+    transition: all .2s ease;
+    font-weight: 600;
+    margin-left: 8px;
 }
 
 .header-2 button:hover {
-    background: rgba(37, 99, 235, 0.06);
-    transform: translateY(-1px);
+    background: #2C5A2E;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(30, 63, 32, 0.3);
 }
 
 .body {
@@ -104,14 +128,21 @@
 }
 
 .top-buttons button {
-    padding: 10px 14px;
-    border-radius: 8px;
+    padding: 12px 20px;
+    border-radius: 6px;
     border: none;
-    background: linear-gradient(180deg, var(--accent), var(--accent-600));
-    color: black;
+    background: var(--carrot-orange);
+    color: #FFFFFF;
     cursor: pointer;
-    box-shadow: 0 8px 20px rgba(37, 99, 235, 0.12);
-    border: 1px solid rgba(15, 23, 42, 0.08);
+    box-shadow: 0 4px 12px rgba(230, 126, 34, 0.2);
+    font-weight: 600;
+    transition: all 0.2s ease;
+}
+
+.top-buttons button:hover {
+    background: #D35400;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(230, 126, 34, 0.3);
 }
 
 .gridButtons {
@@ -122,19 +153,29 @@
 }
 
 .gridButtons button {
-    padding: 12px 10px;
-    border-radius: 8px;
-    border: 1px solid rgba(15, 23, 42, 0.06);
-    background: var(--card);
+    padding: 14px 10px;
+    border-radius: 6px;
+    border: 2px solid rgba(30, 63, 32, 0.2);
+    background: #FFFFFF;
+    color: var(--forest-green);
     cursor: pointer;
     text-align: center;
+    font-weight: 600;
+    transition: all 0.2s ease;
+}
+
+.gridButtons button:hover {
+    background: var(--forest-green);
+    color: #FFFFFF;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(30, 63, 32, 0.2);
 }
 
 .saleSummary {
-    background: var(--card);
-    padding: 12px;
-    border-radius: 8px;
-    box-shadow: 0 6px 18px rgba(2, 6, 23, 0.04);
+    background: #FFFFFF;
+    padding: 16px;
+    border-radius: var(--radius);
+    border: 2px solid rgba(30, 63, 32, 0.1);
 }
 
 .saleSummary table {
@@ -144,29 +185,49 @@
 
 .saleSummary th,
 .saleSummary td {
-    padding: 8px 6px;
+    padding: 10px 8px;
     text-align: left;
+    border-bottom: 1px solid rgba(30, 63, 32, 0.1);
+    color: var(--forest-green);
+}
+
+.saleSummary th {
+    font-weight: 600;
 }
 
 .saleSummary input[type="number"] {
     width: 100px;
-    padding: 6px 8px;
+    padding: 8px 10px;
     border-radius: 6px;
-    border: 1px solid rgba(15, 23, 42, 0.322);
+    border: 2px solid rgba(30, 63, 32, 0.2);
+    background: #FFFFFF;
+    color: var(--forest-green);
+    transition: all 0.2s ease;
+}
+
+.saleSummary input[type="number"]:focus {
+    outline: none;
+    border-color: var(--carrot-orange);
+    box-shadow: 0 0 0 3px rgba(230, 126, 34, 0.1);
 }
 
 .saleSummary button {
-    margin-top: 10px;
-    padding: 10px 12px;
-    border-radius: 8px;
+    margin-top: 12px;
+    padding: 12px 24px;
+    border-radius: 6px;
     border: none;
-    /* background: var(--accent); */
-    /* color: #000000; */
     cursor: pointer;
-    background: linear-gradient(180deg, var(--accent), var(--accent-600));
-    color: black;
-    cursor: pointer;
-    box-shadow: 0 8px 20px rgba(37, 99, 235, 0.12);
+    background: var(--carrot-orange);
+    color: #FFFFFF;
+    box-shadow: 0 4px 12px rgba(230, 126, 34, 0.2);
+    font-weight: 600;
+    transition: all 0.2s ease;
+}
+
+.saleSummary button:hover {
+    background: #D35400;
+    transform: translateY(-2px);
+    box-shadow: 0 6px 16px rgba(230, 126, 34, 0.3);
 }
 
 /* center content for iPad-like layout */
@@ -194,7 +255,7 @@
 
 /* small utility */
 .muted {
-    color: #6b7280;
+    color: #7f8c8d;
 }
 
 .error-message-container {
@@ -203,22 +264,24 @@
     left: 0;
     right: 0;
     bottom: 0;
-    background: rgba(0, 0, 0, 0);
+    background: rgba(30, 63, 32, 0.28);
     display: flex;
     justify-content: center;
-    align-items: flex-start;
-    padding-top: 20px;
+    align-items: center;
+    padding: 24px;
     z-index: 9999;
 }
 
 .error-message {
-    background: rgb(220, 38, 38);
-    color: white;
-    padding: 16px 24px;
-    border-radius: 8px;
-    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+    background: var(--crimson-red);
+    color: #FFFFFF;
+    padding: 20px 24px;
+    border-radius: 10px;
+    box-shadow: 0 10px 25px rgba(192, 57, 43, 0.4);
     max-width: 500px;
+    width: min(500px, 100%);
     text-align: center;
+    font-weight: 600;
     animation: slideDown 0.3s ease-out;
 }
 
@@ -239,21 +302,38 @@
     left: 0;
     right: 0;
     bottom: 0;
-    background: rgba(0, 0, 0, 0);
+    background: rgba(30, 63, 32, 0.28);
     display: flex;
     justify-content: center;
-    align-items: flex-start;
-    padding-top: 20px;
+    align-items: center;
+    padding: 24px;
     z-index: 9999;
 }
 
 .history-dates {
-    background: rgb(28, 90, 184);
-    color: white;
-    padding: 16px 24px;
-    border-radius: 8px;
-    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.3);
+    background: var(--forest-green);
+    color: #FFFFFF;
+    padding: 22px 24px;
+    border-radius: 10px;
+    box-shadow: 0 10px 25px rgba(30, 63, 32, 0.4);
     max-width: 500px;
+    width: min(500px, 100%);
     text-align: center;
+    font-weight: 600;
     animation: slideDown 0.3s ease-out;
+}
+
+.history-dates ul {
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: grid;
+    gap: 10px;
+}
+
+.history-dates li {
+    padding: 12px 14px;
+    border-radius: 8px;
+    background: rgba(255, 255, 255, 0.12);
+    color: #FFFFFF;
 }

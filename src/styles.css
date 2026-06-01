@@ -1,1 +1,149 @@
-/* You can add global styles to this file, and also import other style files */
+/* Global Farm PWA Styles */
+* {
+  box-sizing: border-box;
+}
+
+:root {
+  --bg: #F4F6F4;
+  --card: #FFFFFF;
+  --forest-green: #1E3F20;
+  --carrot-orange: #E67E22;
+  --crimson-red: #C0392B;
+  --fresh-green: #27AE60;
+  --muted-gray: #6C757D;
+  --shadow: 0 10px 24px rgba(30, 63, 32, 0.12);
+  --radius: 8px;
+}
+
+body {
+  margin: 0;
+  font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, Roboto, 'Helvetica Neue', Arial, sans-serif;
+  background: #F4F6F4;
+  color: #1E3F20;
+  line-height: 1.6;
+}
+
+h1,
+h2,
+h3,
+h4,
+label,
+th,
+td,
+p,
+li,
+span {
+  color: var(--forest-green);
+}
+
+.top-bar h1,
+.nav-bar h1,
+.header h1,
+.header h2,
+.modal-content h2,
+.history-dates,
+.history-dates li,
+.error-message,
+.error-message h3,
+.loginForm h3,
+.loginForm h4 {
+  color: #FFFFFF !important;
+}
+
+.header-2 h1,
+.stockTable.changes-table h2,
+.drop-down label,
+.addProduct label,
+.editProduct label,
+.auth h4,
+.role h4 {
+  color: var(--forest-green) !important;
+}
+
+button {
+  font: inherit;
+}
+
+.login-container button,
+.sales-container button,
+.stock-take-container button,
+.drop-down-container button,
+.user-dropdown button,
+.nav-bar button,
+.header button,
+.header-2 button,
+.top-buttons button,
+.saleSummary button,
+.stockActions,
+.unitButtons button,
+.buttons button,
+.addProduct button,
+.editProduct button,
+.dropdown-with-delete button:not(.delete-btn) {
+  color: #FFFFFF !important;
+  border: none;
+  border-radius: var(--radius);
+}
+
+.login-container button[type="submit"],
+.top-buttons button,
+.saleSummary button,
+.stockActions,
+.unitButtons button,
+.header-2 button,
+.buttons button:last-child,
+.addProduct button[type="submit"],
+.editProduct button[type="submit"] {
+  background: var(--carrot-orange) !important;
+  box-shadow: 0 6px 16px rgba(230, 126, 34, 0.24);
+}
+
+.login-container button[type="button"],
+.dropdown-with-delete button:not(.delete-btn),
+.sales-container .gridButtons button,
+.stock-take-container .gridButtons button,
+.buttons button:first-child {
+  background: var(--forest-green) !important;
+  box-shadow: 0 6px 16px rgba(30, 63, 32, 0.2);
+}
+
+.delete-btn,
+.header button,
+.nav-bar button,
+#removeButton,
+.stockActions#removeButton,
+.dashboard-btn.logout,
+.error-message,
+.loginForm h4 {
+  background: var(--crimson-red) !important;
+  color: #FFFFFF !important;
+}
+
+#addButton,
+.loginForm h3 {
+  background: var(--fresh-green) !important;
+  color: #FFFFFF !important;
+}
+
+.sales-container .gridButtons button,
+.stock-take-container .gridButtons button {
+  border: 2px solid rgba(30, 63, 32, 0.12) !important;
+}
+
+.sales-container .gridButtons button:hover,
+.stock-take-container .gridButtons button:hover,
+.dropdown-with-delete button:not(.delete-btn):hover,
+.login-container button:hover,
+.sales-container button:hover,
+.stock-take-container button:hover,
+.drop-down-container button:hover,
+.addProduct button:hover,
+.editProduct button:hover {
+  filter: brightness(0.95);
+}
+
+.error-message-container,
+.display-history-dates,
+.modal {
+  backdrop-filter: blur(2px);
+}
