@@ -36,7 +36,7 @@
     font-weight: 600;
     font-size: clamp(16px, 3.8vw, 20px);
     letter-spacing: 0.3px;
-    background: #1E3F20;
+    /* background: #1E3F20; */
     box-shadow: 0 4px 12px rgba(30, 63, 32, 0.2);
     transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
     cursor: pointer;
@@ -47,14 +47,14 @@
 }
 
 .dashboard-btn.primary{
-    background: #E67E22;
-    color: #FFFFFF;
+    background: #e67d22ea;
+    /* color: #FFFFFF; */
     border-color: rgba(230, 126, 34, 0.3);
 }
 
 .dashboard-btn.secondary{
     background: #1E3F20;
-    color: #FFFFFF;
+    /* color: #FFFFFF; */
     border-color: rgba(30, 63, 32, 0.3);
 }
 

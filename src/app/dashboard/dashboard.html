@@ -1,12 +1,8 @@
 <div class="dashboard-container">
 
-    <button class="dashboard-btn primary" (click)="goToStockTake()" aria-label="Daily Stock Take">
-        <span class="btn-label">Daily Stock Take</span>
-    </button>
+    <button class="dashboard-btn primary" (click)="goToStockTake()"> Daily Stock Take </button>
 
-    <button class="dashboard-btn primary" (click)="goToSales()" aria-label="Sales">
-        <span class="btn-label">Sales</span>
-    </button>
+    <button class="dashboard-btn primary" (click)="goToSales()"> Sales </button>
 
     <button class="dashboard-btn primary" (click)="goToProducts()">Products</button>            
     <!-- routerLink="/products" -->
@@ -16,8 +12,7 @@
     <button class="dashboard-btn primary logout" (click)="goBack()">Logout</button>
 
 
-
-
+    <!--Error Modal-->
     <div class="error-container" *ngIf="errorMessage">
         <div class="error-message">
             <h3>{{ errorMessage }}</h3>

@@ -1,4 +1,4 @@
-.root {
+*, *::before, *::after {
     box-sizing: border-box;
 }
 
@@ -17,6 +17,7 @@
     max-width: 1100px;
     margin: 28px auto;
     padding: 20px;
+    width: min(1100px, calc(100% - 24px));
     background: #FFFFFF;
     border-radius: var(--radius);
     box-shadow: var(--shadow);
@@ -77,15 +78,18 @@
 .stockTable{
     background: #FFFFFF;
     border-radius: var(--radius);
+    width: 100%;
+    max-width: 100%;
     padding: 16px;
     border: 2px solid rgba(30, 63, 32, 0.1);
-    overflow: auto;
+    overflow-x: auto;
+    overflow-y: hidden;
 }
 
 .stockTable table{
     width: 100%;
     border-collapse: collapse;
-    min-width: 700px;
+    min-width: 400px;
 }
 
 .stockTable th,
@@ -251,6 +255,9 @@
     border: 2px solid rgba(30, 63, 32, 0.2);
     border-radius: 6px;
     font-size: 0.95rem;
+    width: 100%;
+    max-width: 220px;
+    min-width: 0;
     background: #FFFFFF;
     color: var(--forest-green);
     cursor: pointer;
@@ -323,7 +330,17 @@
     border-bottom: 2px solid var(--forest-green);
     background-color: rgba(30, 63, 32, 0.08);
     padding: 18px 18px;
+    margin: -16px -16px 16px -16px;
     color: var(--forest-green);
+}
+
+.stockTable.changes-table table {
+    min-width: 460px;
+}
+
+.stockTable.changes-table th,
+.stockTable.changes-table td {
+    line-height: 1.45;
 }
 
 /* Section borders for table rows */
@@ -344,9 +361,95 @@
 }
 
 @media (max-width: 720px){
-    .stock-take-container{ padding: 14px; }
+    .stock-take-container{
+        width: calc(100% - 16px);
+        margin: 8px;
+        padding: 12px;
+    }
+
+    .header{
+        margin: -12px -12px 14px -12px;
+        padding: 14px 12px;
+        display: grid;
+        grid-template-columns: auto 1fr;
+        align-items: center;
+        gap: 10px;
+    }
+
+    .header h1{
+        grid-column: 1 / -1;
+        order: -1;
+        text-align: center;
+        font-size: 1.1rem;
+    }
+
+    .header h2{
+        justify-self: end;
+        margin-right: 0;
+        font-size: 1rem;
+    }
+
+    .header button{
+        margin-left: 0;
+    }
+
+    .stockTable{
+        padding: 10px;
+    }
+
     .stockTable table{ min-width: 520px; }
-    .header h1{ font-size: 1.1rem; }
+
+    .stockTable th,
+    .stockTable td{
+        padding: 10px 8px;
+    }
+
+    .stockTable th:first-child,
+    .stockTable td:first-child{
+        width: 130px;
+    }
+
+    .stockTable.changes-table {
+        -webkit-overflow-scrolling: touch;
+    }
+
+    .stockTable.changes-table table {
+        min-width: 500px;
+    }
+
+    .stockTable.changes-table th,
+    .stockTable.changes-table td {
+        padding: 10px 8px;
+        font-size: 0.98rem;
+        white-space: nowrap;
+    }
+
+    .stockTable.changes-table h2{
+        margin: -10px -10px 12px -10px;
+        padding: 14px 12px;
+    }
+}
+
+@media (max-width: 480px){
+    .stock-take-container{
+        width: calc(100% - 12px);
+        margin: 6px;
+    }
+
+    .stockTable{
+        padding: 8px;
+    }
+
+    .stockButtons{
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .stockActions,
+    .date-picker{
+        width: 100%;
+        max-width: 100%;
+    }
 }
 
 /* small utility */

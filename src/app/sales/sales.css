@@ -63,6 +63,7 @@
     display: flex;
     flex-wrap: wrap;
     justify-content: center;
+    gap: 10px;
     padding: 16px;
     background: rgba(30, 63, 32, 0.05);
     border-radius: var(--radius);
@@ -80,6 +81,7 @@
 .header-2 input[type="date"] {
     margin-left: auto;
     margin-right: 8px;
+    min-width: 180px;
     padding: 10px 14px;
     border-radius: 6px;
     border: 2px solid rgba(30, 63, 32, 0.2);
@@ -176,10 +178,12 @@
     padding: 16px;
     border-radius: var(--radius);
     border: 2px solid rgba(30, 63, 32, 0.1);
+    overflow-x: auto;
 }
 
 .saleSummary table {
     width: 100%;
+    min-width: 520px;
     border-collapse: collapse;
 }
 
@@ -230,6 +234,15 @@
     box-shadow: 0 6px 16px rgba(230, 126, 34, 0.3);
 }
 
+.sales-history-summary table {
+    min-width: 640px;
+}
+
+.sales-history-summary th,
+.sales-history-summary td {
+    line-height: 1.45;
+}
+
 /* center content for iPad-like layout */
 @media (min-width: 700px) and (max-width: 1024px) {
     .sales-container {
@@ -244,12 +257,117 @@
 
 @media (max-width: 699px) {
     .gridButtons {
-        grid-template-columns: repeat(2, 1fr);
+        grid-template-columns: repeat(2, minmax(0, 1fr));
     }
 
     .sales-container {
         padding: 14px;
         margin: 12px;
+    }
+
+    .header {
+        margin: -14px -14px 14px -14px;
+        padding: 14px;
+        display: grid;
+        grid-template-columns: auto 1fr;
+        align-items: center;
+    }
+
+    .header h1 {
+        grid-column: 1 / -1;
+        order: -1;
+        text-align: center;
+        font-size: 1.25rem;
+    }
+
+    .header h2 {
+        display: none;
+    }
+
+    .top-buttons {
+        flex-direction: column;
+    }
+
+    .top-buttons button,
+    .header-2 input[type="date"],
+    .header-2 button,
+    .saleSummary button {
+        width: 100%;
+        margin: 0;
+    }
+
+    .header-2 {
+        display: grid;
+        justify-content: stretch;
+    }
+
+    .header-2 h1 {
+        font-size: 1.2rem;
+        margin-bottom: 4px;
+    }
+
+    .saleSummary {
+        padding: 12px;
+    }
+
+    .saleSummary th,
+    .saleSummary td {
+        padding: 8px 6px;
+        font-size: 0.95rem;
+    }
+
+    .sales-history-summary {
+        -webkit-overflow-scrolling: touch;
+    }
+
+    .sales-history-summary table {
+        min-width: 620px;
+    }
+
+    .sales-history-summary th,
+    .sales-history-summary td {
+        padding: 10px 8px;
+        font-size: 0.98rem;
+        white-space: nowrap;
+    }
+
+    .sales-history-summary th:nth-child(2),
+    .sales-history-summary td:nth-child(2) {
+        min-width: 150px;
+        white-space: normal;
+    }
+
+    .history-dates {
+        max-height: min(400px, 75vh);
+        padding: 18px;
+    }
+}
+
+@media (max-width: 480px) {
+    .gridButtons {
+        grid-template-columns: 1fr;
+    }
+
+    .header button,
+    .top-buttons button,
+    .header-2 button,
+    .header-2 input[type="date"] {
+        font-size: 0.95rem;
+    }
+
+    .header h1,
+    .header-2 h1 {
+        font-size: 1.1rem;
+    }
+
+    .display-history-dates,
+    .error-message-container {
+        padding: 16px;
+    }
+
+    .history-dates,
+    .error-message {
+        width: 100%;
     }
 }
 
@@ -318,9 +436,11 @@
     box-shadow: 0 10px 25px rgba(30, 63, 32, 0.4);
     max-width: 500px;
     width: min(500px, 100%);
+    max-height: 400px;
     text-align: center;
     font-weight: 600;
     animation: slideDown 0.3s ease-out;
+    overflow-y: auto;
 }
 
 .history-dates ul {
@@ -335,5 +455,9 @@
     padding: 12px 14px;
     border-radius: 8px;
     background: rgba(255, 255, 255, 0.12);
+    color: #FFFFFF;
+}
+
+.history-dates h3{
     color: #FFFFFF;
 }

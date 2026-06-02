@@ -85,7 +85,6 @@ export class Sales implements OnInit {
       if (this.sales.length > 0) {
         const tempcount = this.sales.length - 1;
         const tempid = this.sales[tempcount].SaleGroup + 1;
-        console.log('Sales.length - 1 :', tempcount)
         this.saleIdCounter = tempid;//this.sales[tempcount].SaleGroup + 1;
         this.getStockNames();
       }
@@ -93,12 +92,8 @@ export class Sales implements OnInit {
 
     });
 
-
-    console.log("Fetched sales data:", this.sales);
-
     this.stockService.getStock().subscribe(data => {
       this.currentStock = data;
-      console.log("Fetched stock data:", this.currentStock);
     })
   }
 
@@ -119,14 +114,15 @@ export class Sales implements OnInit {
   }
 
   async exportDailySalesToExcel(): Promise<void> {
+    this.selectedDate = new Date(this.selectedDate);
+    this.selectedDate.setHours(4, 0, 0, 0); // Need to give it a few extra hours to keep it in the right timezone once it goes to backend
     const today = new Date(); //comparison variable
     const todayStr = today.toISOString().slice(0, 10); // '2026-05-30'
     //const day = this.selectedDate.toString().slice(0, 10); //Gets '2026-05-30'
-    const day = this.selectedDate.toString();
+    const day = this.selectedDate.toISOString().slice(0, 10);
 
     //Exporting for specified date
     if (todayStr > day) {
-      console.log('We are hitting the if statement')
       try {     //Was having issue of subscribed data not being available when export function runs, so switched to firstValueFrom to await the data before proceeding with export logic
         const data = await firstValueFrom(this.saleService.exportSales(day));
         this.exportSales = data.map((item: any) => ({
@@ -137,15 +133,12 @@ export class Sales implements OnInit {
           Date: new Date(item.Date ?? item.date ?? Date.now()),
           SaleGroup: item.SaleGroup ?? item.saleGroup ?? 0,
         }));
-        // console.log('All sales data in sales var: ', this.sales);
         this.sales = this.exportSales;                             //Re-writing existing sales variable to exportSales   
         this.groupSalesForTable();                                  //Have to group the data again.
-        // console.log('Sales after setting to exportSales:', this.sales);
       } catch (error: any) {
         // console.error('Export sales failed:', error);
         this.ngZone.run(() => {
           this.exportErrorMessage = error.error + ". Please select a new valid date to export.";
-          console.log(this.exportErrorMessage);
           // Force Angular to detect the change
           setTimeout(() => this.cdr.markForCheck(), 0);
         });
@@ -425,7 +418,6 @@ export class Sales implements OnInit {
       items,
       grandTotal: items.reduce((sum, s) => sum + (s.TotalPrice || 0), 0),
     }));
-    console.log('SaleGrouping Details:', this.saleGroupingForTable)
   }
 
 
@@ -448,7 +440,6 @@ export class Sales implements OnInit {
     // Only add to the active cart (`currentSales`).
     // We'll record the final quantities into `sales` when the sale is finished.
     this.currentSales.push({ ...newSale });
-    // console.log("Current Sales:", this.sales);
   }
 
   finishSale() {
@@ -463,12 +454,10 @@ export class Sales implements OnInit {
           this.getSales();
         },
         error: (error) => {
-          console.log(error)
+          console.log(error);
         }
       });
     }
-
-    console.log('Total Sales for now are :', this.sales);
 
     // Clear the cart and advance the sale ID for the next sale
     this.currentSales = [];
@@ -494,6 +483,14 @@ export class Sales implements OnInit {
       return;
     }
 
+  }
+
+  passStringAsDate(date: string){
+    this.selectedDate = new Date(date);
+    console.log("Date parameter from html select: ", date);
+    console.log('Selected date after assignment:', this.selectedDate);
+    this.exportDailySalesToExcel();
+    this.displayHistoryModal = false;
   }
 
 

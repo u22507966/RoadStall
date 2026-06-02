@@ -10,7 +10,6 @@
 
         <div class="top-buttons">
             <button (click)="makingSale = true;">Make a Sale</button>
-            <button (click)="makingSale = false;">View Sales History</button>
         </div>
 
         <div class="gridButtons" *ngIf="makingSale">
@@ -18,7 +17,7 @@
                 (click)="numberOfProducts = numberOfProducts + 1; selectedProduct(stockitem, i)" >{{stockitem.stockName}}</button>
         </div>
 
-        <div class="saleSummary">
+        <div class="saleSummary" *ngIf="currentSales.length > 0">
             <div class="eachSale">
                 <table>
                     <tbody>
@@ -49,22 +48,16 @@
         <h1>Sales History For: {{today | date:'dd/MM/yyyy'}}</h1>
         <input type="date" [(ngModel)]="selectedDate" class="date-picker">
         <button (click)="exportDailySalesToExcel()">Export to Excel</button>
-        <button (click)="viewHistoryDates(); displayHistoryModal = true;">View History Dates</button>
+        <button (click)="viewHistoryDates(); displayHistoryModal = true;">View Available Dates</button>
     </div>
 
     <div class="body">
-
-        <div class="saleSummary">
+        <div class="top-buttons">
+            <button (click)="makingSale = false;">View Sales History</button>
+        </div>
+        
+        <div class="saleSummary sales-history-summary">
             <table>
-                <!-- <tbody>
-                    <tr *ngFor="let sale of sales; let i = index">
-                        <th>A{{sale.SaleGroup}}</th>
-                        <th>{{getStockNameById(sale.StockId)}}</th>
-                        <th>Price: R{{sale.TotalPrice}}</th>
-                        <th>Quantity: {{sale.QuantitySold}}</th>
-                        <th>Total: R{{sale.TotalPrice * sale.QuantitySold}}</th>
-                    </tr>
-                </tbody> -->
                 <thead>
                     <tr>
                         <th></th>
@@ -106,10 +99,11 @@
         </div>
     </div>
 
-    <div class="display-history-dates" *ngIf="displayHistoryModal">
+    <div class="display-history-dates" *ngIf="displayHistoryModal" (click)="displayHistoryModal = false;">
         <div class="history-dates">
-            <ul>
-                <li *ngFor="let date of historicalDates" (click)="$event.stopPropagation()">{{ date | date:'yyyy/MM/dd'}}</li>
+            <h3>Select a date to Export:</h3>
+            <ul  (click)="$event.stopPropagation()">
+                <li *ngFor="let date of historicalDates" (click)="passStringAsDate(date)">{{ date | date:'yyyy/MM/dd'}}</li>
             </ul>
         </div>
     </div>
