@@ -1,6 +1,7 @@
 import { Component } from '@angular/core';
 import { Router, RouterLink } from '@angular/router';
 import { CommonModule } from '@angular/common';
+import { Notifications } from '../Services/notifications';
 
 @Component({
   selector: 'app-dashboard',
@@ -13,7 +14,7 @@ export class Dashboard {
   errorMessage: string = '';
   roleId: number = Number(localStorage.getItem('roleId'));
 
-  constructor(private router: Router) {
+  constructor(private router: Router, private notificationService: Notifications) {
   }
 
   ngOnInit(): void {
@@ -45,6 +46,14 @@ export class Dashboard {
 
   goBack() {
     this.router.navigate(['/login']);
+  }
+
+  enableNotifications(){
+    this.notificationService.subscribeToNotification();
+  }
+
+  sendTestNotification(){
+    this.notificationService.sendTestNotiToAll();
   }
 
 }

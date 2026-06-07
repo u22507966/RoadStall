@@ -11,6 +11,11 @@
 
     <button class="dashboard-btn primary logout" (click)="goBack()">Logout</button>
 
+    <div class="notifications-container">
+        <button (click)="enableNotifications()">Enable Notifications?</button>
+        <button (click)="sendTestNotification()">Send Test Notifications</button>
+    </div>
+
 
     <!--Error Modal-->
     <div class="error-container" *ngIf="errorMessage">
