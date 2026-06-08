@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import {SwPush} from "@angular/service-worker";
 import {  HttpClient } from "@angular/common/http";
 import { environment } from '../../environments/environment.prod';
+import { NotificationDto } from '../Models/Dto/NotificationDto';
 
 @Injectable({
   providedIn: 'root',
@@ -27,11 +28,8 @@ export class Notifications {
     }).catch(err => console.error("Could not subscribe to notifications", err));
   }
 
-  sendTestNotiToAll(){
-    this.http.post(`${this.apiUrl}/api/PushSubscriptions/sendToAll`, {
-      title: 'Test Notification',
-      message: 'Test Notification for all roadstall users!'
-    }).subscribe(() => {
+  sendTestNotiToAll(notification: NotificationDto){
+    this.http.post(`${this.apiUrl}/api/PushSubscriptions/sendToAll`, notification).subscribe(() => {
       console.log("Test notification sent to all users.");
     }, error => {
       console.error("Error sending test notification to all users:", error);

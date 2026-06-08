@@ -5,6 +5,8 @@ import { StockTakeClass } from './stock-take/stock-take';
 import { Sales } from './sales/sales';
 import { Products } from './products/products';
 import { User } from './user/user';
+import { Profile } from './profile/profile';
+
 
 export const routes: Routes = [
     { path: '', redirectTo: '/login', pathMatch: 'full' },
@@ -13,5 +15,6 @@ export const routes: Routes = [
     { path: 'stock-take', component: StockTakeClass },
     { path: 'sales', component: Sales },
     { path: 'products', component: Products },
-    {path: 'user', component: User}
+    {path: 'user', component: User},
+    {path: 'profile', component: Profile}
 ];

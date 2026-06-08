@@ -1,10 +1,20 @@
+<div class="top-bar">
+    <div class="top-left-buttons">
+        <button (click)="showStockRequestModal = true">Request Stock</button>
+    </div>
+    <div class="top-middle-title">
+        <h1>Roadstall</h1>
+    </div>
+    <div class="top-profile" (click)="goToProfile()"><img src="/Images/Profile-png.png" alt="Profile"></div>
+</div>
+
 <div class="dashboard-container">
 
     <button class="dashboard-btn primary" (click)="goToStockTake()"> Daily Stock Take </button>
 
     <button class="dashboard-btn primary" (click)="goToSales()"> Sales </button>
 
-    <button class="dashboard-btn primary" (click)="goToProducts()">Products</button>            
+    <button class="dashboard-btn primary" (click)="goToProducts()">Products</button>
     <!-- routerLink="/products" -->
 
     <button class="dashboard-btn primary" (click)="goToUsers()">Users</button>
@@ -13,7 +23,7 @@
 
     <div class="notifications-container">
         <button (click)="enableNotifications()">Enable Notifications?</button>
-        <button (click)="sendTestNotification()">Send Test Notifications</button>
+        <!-- <button (click)="sendTestNotification()">Send Test Notifications</button> -->
     </div>
 
 
@@ -23,4 +33,34 @@
             <h3>{{ errorMessage }}</h3>
         </div>
     </div>
+
+    <!--Stock Request Modal-->
+    <div class="stock-request-modal-ext" *ngIf="showStockRequestModal"
+        (click)="showStockRequestModal = false; clearStockList();">
+        <div class="stock-request-modal-int" (click)="$event.stopPropagation()">
+            <div>
+                <h2>Request Stock</h2>
+            </div>
+            <div class="stock-request-body">
+                <select [(ngModel)]="selectedStock.name">
+                    <option value="">Select stock</option>
+                    <option *ngFor="let item of stock" [value]="item.stockName">
+                        {{ item.stockName }}
+                    </option>
+                </select>
+                <input type="number" placeholder="0" [(ngModel)]="selectedStock.quantity">
+                <button (click)="addStockToSummary()">+</button>
+            </div>
+            <div class="stock-request-summary">
+                <p *ngFor="let item of selectedStockList; let i = index">
+                    {{selectedStockList[i].name}}: {{selectedStockList[i].quantity}}
+                    <button (click)="selectedStockList.splice(i, 1)">-</button>
+                </p>
+
+                <button (click)="sendStockRequest()">Send Request</button>
+                
+            </div>
+        </div>
+    </div>
+
 </div>
