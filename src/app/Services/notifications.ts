@@ -38,7 +38,7 @@ export class Notifications {
     });
   }
 
-  // sendNotiToAdmin(){
+  // sendStockRequestNotification(){
 
   // }
   
