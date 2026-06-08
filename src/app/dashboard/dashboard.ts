@@ -76,7 +76,8 @@ export class Dashboard implements OnInit {
   }
 
   goToProfile() {
-    this.router.navigate(['/profile'])
+    // this.router.navigate(['/profile'])
+    alert("Area under construction. Come back later");
   }
 
   addStockToSummary(){
@@ -86,7 +87,8 @@ export class Dashboard implements OnInit {
     }
 
     this.selectedStockList.push({name: this.selectedStock.name, quantity: this.selectedStock.quantity});
-    console.log("Stock Request Summary:", this.selectedStockList)
+    this.selectedStock.quantity = 0;
+    // console.log("Stock Request Summary:", this.selectedStockList)
   }
 
   clearStockList(){
@@ -101,12 +103,17 @@ export class Dashboard implements OnInit {
       return;
     }
 
+    this.showStockRequestModal = false;
+
     let notification: NotificationDto = {title: "Stock Request", message: ""};
     this.selectedStockList.forEach(stock => {
       notification.message = notification.message + stock.name + ": " + stock.quantity + "\n";
     });
 
     this.notificationService.sendTestNotiToAll(notification);
+
+    this.selectedStock = {name: '', quantity: 0};
+    this.selectedStockList = [];
   }
 
 }
