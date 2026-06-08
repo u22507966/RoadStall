@@ -38,7 +38,7 @@ export class Dashboard implements OnInit {
         price: x.price ?? x.Price ?? x.price,
       }));
       this.cdr.detectChanges();
-      console.log(this.stock);
+      // console.log(this.stock);
     });
 
   }
@@ -98,7 +98,8 @@ export class Dashboard implements OnInit {
   }
 
   sendStockRequest(){
-    if(this.selectedStockList.length = 0){
+    console.log(this.selectedStockList, this.selectedStockList.length);
+    if(this.selectedStockList.length == 0){
       alert("Please select a stock number before submitting!")
       return;
     }
