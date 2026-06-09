@@ -71,13 +71,9 @@ export class Dashboard implements OnInit {
     this.router.navigate(['/login']);
   }
 
-  enableNotifications() {
-    this.notificationService.subscribeToNotification();
-  }
-
   goToProfile() {
     // this.router.navigate(['/profile'])
-    alert("Area under construction. Come back later");
+    alert("Functionality under construction. Come back later");
   }
 
   addStockToSummary(){

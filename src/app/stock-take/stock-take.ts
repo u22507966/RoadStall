@@ -33,21 +33,6 @@ interface todaysStockChangesTable {
 })
 export class StockTakeClass implements OnInit, OnDestroy {
 
-  // mockStock: Stock[] = [
-  //   {StockItem: 'Litchi 2KG', Price: 70.00},
-  //   {StockItem: 'Honey Bottle 500g', Price: 90},
-  //   {StockItem: 'Honey Punnet', Price: 40},
-  //   {StockItem: 'Honey 1KG', Price: 160},
-  //   {StockItem: 'Honey Bottle Comb 350g', Price: 70},
-  //   {StockItem: 'Nuts 100g', Price: 20},
-  //   {StockItem: 'Nuts 200g', Price: 30},
-  //   {StockItem: 'Basil', Price: 15},
-  //   {StockItem: 'Mac Trees', Price: 60},
-  //   {StockItem: 'Litchi Sulphur Lug', Price: 250},
-  //   {StockItem: 'White Bag', Price: 10},
-  //   {StockItem: 'Empty 2KG Box', Price: 7},
-  //   {StockItem: 'Litchi Red Lug', Price: 220},
-  // ];
   stock$!: Observable<Stock[]>;
   CurrentStock: Stock[] = [];
 

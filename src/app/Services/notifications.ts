@@ -20,9 +20,9 @@ export class Notifications {
       // console.log("Push Subscription", subscription);
 
       this.http.post(`${this.apiUrl}/api/PushSubscriptions/subscribe`, {subscription: subscription, userId: this.userid}).subscribe(() => {
-        console.log("Subscription saved to database.");
+        // console.log("Subscription saved to database.");
       }, error => {
-        console.error("Error saving subscription to database:", error);
+        // console.error("Error saving subscription to database:", error);
       });
       
     }).catch(err => console.error("Could not subscribe to notifications", err));

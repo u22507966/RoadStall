@@ -1,1 +1,48 @@
-<p>profile works!</p>
+<div class="profile-container">
+    <div class="top-bar">
+        <div class="top-bar-buttons">
+            <button type="button">Stock Take</button>
+            <button type="button">Sales</button>
+            <button type="button">Products</button>
+            <button type="button">Users</button>
+        </div>
+        <div class="top-bar-title">
+            <h1>Profile</h1>
+        </div>
+        <div class="top-bar-spacer" aria-hidden="true"></div>
+    </div>
+
+    <div class="profile-card">
+        <div class="profile-header">
+            <p class="profile-eyebrow">Account settings</p>
+            <h2>Manage your profile details</h2>
+        </div>
+
+        <div class="profile-body">
+            <div class="profile-inputs">
+                <label class="input-group">
+                    <span>Name</span>
+                    <input type="text" placeholder="Name">
+                </label>
+
+                <label class="input-group">
+                    <span>Password</span>
+                    <input type="password" placeholder="Password">
+                </label>
+            </div>
+
+            <div class="profile-actions">
+                <button type="button" class="secondary-action">Edit Profile</button>
+                <button type="button" class="primary-action">Save Changes</button>
+                <button type="button" class="neutral-action" routerLink="/dashboard">Back</button>
+                <button type="button" class="secondary-action" (click)="enableNotifications()">Enable Notifications</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="popup-modal-container" *ngIf="showPopupModal == true" (click)="showPopupModal = false; PopupModalMessage = ''">
+        <div class="popup-modal" role="alert" aria-live="assertive">
+            <h3>{{PopupModalMessage}}</h3>
+        </div>
+    </div>
+</div>
