@@ -1,0 +1,19 @@
+<!-- Parent usage example:
+<app-top-quick-modal
+    [isOpen]="showQuickModal"
+    [title]="quickModalTitle"
+    [message]="quickModalMessage"
+    [type]="quickModalType"
+    (closed)="showQuickModal = false">
+</app-top-quick-modal>
+-->
+
+<div class="outer-modal" *ngIf="isOpen" >   <!--(click)="closeModal()"-->
+    <div class="inner-modal" [class.success]="type === 'success'" [class.error]="type === 'error'"
+        [class.warning]="type === 'warning'" [class.info]="type === 'info'" (click)="$event.stopPropagation()">
+        <p class="modal-type">{{ type | titlecase }}</p>
+        <h3>{{ title }}</h3>
+        <p>{{ message }}</p>
+        <!-- <button type="button" (click)="closeModal()">Close</button> -->
+    </div>
+</div>

@@ -50,7 +50,7 @@ export class StockTakeClass implements OnInit, OnDestroy {
 
   stockAuditTrail: StockChange[] = [];
   selectedQuantity: number = 0;
-  selectedStockItem!: Stock;
+  selectedStockItem?: Stock;
   showStockSelectModal: boolean = false;
   showQuantitySection: boolean = false;
   changeType: string = '';
@@ -369,6 +369,13 @@ export class StockTakeClass implements OnInit, OnDestroy {
     this.router.navigate(['/dashboard']);
   }
 
+  closeStockSelectionModal() {
+    this.showStockSelectModal = false;
+    this.showQuantitySection = false;
+    this.selectedQuantity = 0;
+    this.selectedStockItem = undefined;
+  }
+
   selectStockItem(stockitem: Stock, index: number) {
     this.selectedStockItem = stockitem;
   }
@@ -380,9 +387,12 @@ export class StockTakeClass implements OnInit, OnDestroy {
       return;
     }
 
+    const selectedStockItem = this.selectedStockItem;
+    const selectedQuantity = this.selectedQuantity;
+
     //Getting the stocks StockTake to check if theres a closing stock, to then add the adjustment value to stock change model
-    console.log('selected id:', this.selectedStockItem.id);
-    this.stockTakeService.getStockTakeByStockId(this.selectedStockItem.id).subscribe({
+    console.log('selected id:', selectedStockItem.id);
+    this.stockTakeService.getStockTakeByStockId(selectedStockItem.id).subscribe({
       next: (stockTake) => {
         // console.log('Fetched stock take for selected item:', stockTake);
         // console.log('ClosingStock value:', stockTake.ClosingStock);
@@ -399,18 +409,18 @@ export class StockTakeClass implements OnInit, OnDestroy {
         this.stockAuditTrail.push({
           Id: this.stockAuditTrail.length + 1,
           UserId: Number(localStorage.getItem('userId') ?? 0),
-          StockId: this.selectedStockItem.id,
+          StockId: selectedStockItem.id,
           ChangeType: this.changeType,
-          Quantity: this.selectedQuantity,
+          Quantity: selectedQuantity,
           ChangeDate: new Date(),
         });
 
         var x: StockChange = {
           Id: 0,
           UserId: Number(localStorage.getItem('userId') ?? 0),
-          StockId: this.selectedStockItem.id,
+          StockId: selectedStockItem.id,
           ChangeType: this.changeType,
-          Quantity: this.selectedQuantity,
+          Quantity: selectedQuantity,
           ChangeDate: new Date(),
           Adjustment: isAdjustment
         }
@@ -463,8 +473,7 @@ export class StockTakeClass implements OnInit, OnDestroy {
       }
     });
 
-    this.showStockSelectModal = false;
-    this.showQuantitySection = false;
+    this.closeStockSelectionModal();
 
   } //save stock changes method
 
@@ -895,6 +904,8 @@ export class StockTakeClass implements OnInit, OnDestroy {
     else if (modalType === 'Removed') {
       this.changeType = 'Stock Removed';
     }
+    this.selectedQuantity = 0;
+    this.selectedStockItem = undefined;
     this.showStockSelectModal = true;
   }
 

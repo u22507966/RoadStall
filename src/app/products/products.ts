@@ -8,10 +8,11 @@ import { FormsModule } from "@angular/forms";
 import { ChangeDetectorRef } from '@angular/core';
 import { RouterLink } from "@angular/router";
 import { NgForm } from '@angular/forms';
+import { TopQuickModal } from '../Modals/top-quick-modal/top-quick-modal';
 
 @Component({
   selector: 'app-products',
-  imports: [CommonModule, FormsModule, RouterLink],
+  imports: [CommonModule, FormsModule, RouterLink, TopQuickModal],
   templateUrl: './products.html',
   styleUrl: './products.css',
 })
@@ -30,6 +31,12 @@ export class Products implements OnInit {
 
   //role variables
   roleId!: number;
+
+  //External modal variables
+  showFeedbackModal: boolean = false; 
+  feedbackTitle: string = "";
+  feedbackMessage: string = "";
+  feedbackType: 'success' | 'error' | 'warning' | 'info' = 'info';
 
   constructor(private stockService: StockService, private cdr: ChangeDetectorRef) {
     this.stock$ = this.stockService.getStock();
@@ -110,6 +117,15 @@ export class Products implements OnInit {
     this.stockService.addStock(this.newProd, userId).subscribe({
       next: () => {
         console.log("Product added successfully:", this.newProd);
+        this.feedbackTitle = 'Success';
+        this.feedbackMessage = 'Product added successfully';
+        this.feedbackType = 'success';
+        this.showFeedbackModal = true;
+        setTimeout(() => {
+          this.showFeedbackModal = false;
+          this.cdr.detectChanges();
+        }, 1000);
+
         this.stockService.getStock().subscribe({
           next: (data) => {
             this.stock = data.map((item: any) => ({

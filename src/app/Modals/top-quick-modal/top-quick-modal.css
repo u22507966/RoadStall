@@ -1,0 +1,66 @@
+.outer-modal {
+	position: fixed;
+	top: 80%;
+	left: 0;
+	right: 0;
+	display: flex;
+	justify-content: center;
+	padding: 0 16px;
+	z-index: 1200;
+}
+
+.inner-modal {
+	width: min(420px, 100%);
+	padding: 18px 20px;
+	border-radius: 12px;
+	color: #FFFFFF;
+	box-shadow: 0 18px 40px rgba(15, 23, 15, 0.25);
+	border: 1px solid rgba(255, 255, 255, 0.16);
+}
+
+.inner-modal.success {
+	background: linear-gradient(180deg, #27AE60 0%, #229954 100%);
+}
+
+.inner-modal.error {
+	background: linear-gradient(180deg, #C0392B 0%, #A93226 100%);
+}
+
+.inner-modal.warning {
+	background: linear-gradient(180deg, #E67E22 0%, #D35400 100%);
+}
+
+.inner-modal.info {
+	background: linear-gradient(180deg, #1E3F20 0%, #2C5A2D 100%);
+}
+
+.modal-type {
+	margin: 0 0 6px 0;
+	font-size: 0.78rem;
+	text-transform: uppercase;
+	letter-spacing: 0.08em;
+	opacity: 0.88;
+}
+
+.inner-modal h3 {
+	margin: 0 0 8px 0;
+	color: #FFFFFF;
+	font-size: 1.1rem;
+}
+
+.inner-modal p {
+	margin: 0;
+	color: #FFFFFF;
+	line-height: 1.5;
+}
+
+.inner-modal button {
+	margin-top: 14px;
+	padding: 9px 14px;
+	border: none;
+	border-radius: 8px;
+	background: rgba(255, 255, 255, 0.18);
+	color: #FFFFFF;
+	cursor: pointer;
+	font: inherit;
+}

@@ -54,3 +54,11 @@
 
     </form>
 </div>
+
+<app-top-quick-modal
+    [isOpen]="showFeedbackModal"
+    [title]="feedbackTitle"
+    [message]="feedbackMessage"
+    [type]="feedbackType"
+    (closed)="showFeedbackModal = false">
+</app-top-quick-modal>

@@ -163,27 +163,56 @@
 
 .gridButtons{
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
-    gap: 8px;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 12px;
+    max-height: 320px;
+    padding: 12px;
+    overflow-y: auto;
+    border-radius: 10px;
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.14), rgba(255, 255, 255, 0.06));
+    border: 1px solid rgba(255, 255, 255, 0.16);
 }
 
-.gridButtons button{
-    padding: 12px 14px;
-    border-radius: 6px;
-    border: 2px solid rgba(255, 255, 255, 0.3);
-    background: #FFFFFF;
-    color: var(--forest-green);
+.stock-take-container .gridButtons button{
+    min-height: 56px;
+    padding: 14px 16px;
+    border-radius: 10px;
+    border: 1px solid rgba(230, 126, 34, 0.22) !important;
+    background: linear-gradient(180deg, #FFF8EF 0%, #FDEBD2 100%) !important;
+    color: var(--forest-green) !important;
     cursor: pointer;
-    transition: transform .15s ease, box-shadow .15s ease;
-    font-weight: 600;
+    transition: transform .15s ease, box-shadow .15s ease, border-color .15s ease, background .15s ease;
+    font-weight: 700;
+    text-align: center;
+    box-shadow: 0 10px 20px rgba(16, 34, 17, 0.14) !important;
 }
 
-.gridButtons button:hover{
+.stock-take-container .gridButtons button:hover,
+.stock-take-container .gridButtons button:focus-visible{
     transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(230, 126, 34, 0.2);
-    background: var(--carrot-orange);
-    color: #FFFFFF;
-    border-color: var(--carrot-orange);
+    background: linear-gradient(180deg, #FCE3BD 0%, #F7C980 100%) !important;
+    color: #3A2410 !important;
+    border-color: rgba(230, 126, 34, 0.65) !important;
+    box-shadow: 0 14px 26px rgba(16, 34, 17, 0.2) !important;
+    outline: none;
+}
+
+.stock-take-container .gridButtons button.is-selected{
+    background: linear-gradient(180deg, #E67E22 0%, #C96A16 100%) !important;
+    color: #FFFFFF !important;
+    border-color: rgba(255, 248, 239, 0.72) !important;
+    box-shadow: 0 0 0 3px rgba(255, 244, 230, 0.24), 0 14px 26px rgba(16, 34, 17, 0.24) !important;
+}
+
+.stock-take-container .gridButtons button.is-selected:hover,
+.stock-take-container .gridButtons button.is-selected:focus-visible{
+    background: linear-gradient(180deg, #F0923E 0%, #CF6F18 100%) !important;
+    color: #FFFFFF !important;
+}
+
+.stock-take-container .gridButtons button:active{
+    transform: translateY(0);
+    box-shadow: 0 6px 14px rgba(16, 34, 17, 0.18) !important;
 }
 
 .unitButtons{
@@ -427,6 +456,12 @@
     .stockTable.changes-table h2{
         margin: -10px -10px 12px -10px;
         padding: 14px 12px;
+    }
+
+    .gridButtons{
+        grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+        max-height: 280px;
+        padding: 10px;
     }
 }
 

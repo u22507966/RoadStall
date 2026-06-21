@@ -11,7 +11,7 @@ import { title } from 'process';
 
 @Component({
   selector: 'app-dashboard',
-  imports: [RouterLink, CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule],
   templateUrl: './dashboard.html',
   styleUrl: './dashboard.css',
 })

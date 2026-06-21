@@ -152,6 +152,11 @@
     grid-template-columns: repeat(3, 1fr);
     gap: 10px;
     justify-items: stretch;
+    border: 3px solid rgb(236, 200, 200);
+    border-radius: 15px;
+    padding: 5px 5px;
+    max-height: 210px;
+    overflow-y: scroll;
 }
 
 .gridButtons button {
