@@ -39,7 +39,7 @@ export class Login {
       return;
     }
 
-    this.successMessage = 'Please Wait... Initial Login May Take Up To 20 Seconds';
+    this.successMessage = 'Please Wait... Initial Login May Take Up To 1 Minute';
 
     localStorage.setItem('username', this.username);
     this.userService.getUserId(this.username).subscribe({

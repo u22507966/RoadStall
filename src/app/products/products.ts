@@ -103,7 +103,15 @@ export class Products implements OnInit {
   addProduct(){
 
     if(this.newName.trim() === '' || this.newPrice <= 0){
-      alert("Please enter a valid product name and price.");
+      // this.feedbackTitle = 'Error';
+        this.feedbackMessage = 'Please enter a valid name and price';
+        this.feedbackType = 'warning';
+        this.showFeedbackModal = true;
+        setTimeout(() => {
+          this.showFeedbackModal = false;
+          this.cdr.detectChanges();
+        }, 1500);
+
       return;
     }
     this.newProd = {
@@ -116,15 +124,14 @@ export class Products implements OnInit {
     const userId = Number(localStorage.getItem('userId'));
     this.stockService.addStock(this.newProd, userId).subscribe({
       next: () => {
-        console.log("Product added successfully:", this.newProd);
-        this.feedbackTitle = 'Success';
+        // this.feedbackTitle = 'Success';
         this.feedbackMessage = 'Product added successfully';
         this.feedbackType = 'success';
         this.showFeedbackModal = true;
         setTimeout(() => {
           this.showFeedbackModal = false;
           this.cdr.detectChanges();
-        }, 1000);
+        }, 1500);
 
         this.stockService.getStock().subscribe({
           next: (data) => {
@@ -158,13 +165,30 @@ export class Products implements OnInit {
     }
 
     if(this.selectedProduct.stockName.trim() === '' || this.selectedProduct.price <= 0){
-      alert("Please enter a valid product name and price.");
+      // this.feedbackTitle = 'Success';
+        this.feedbackMessage = 'Please enter a valid name and price';
+        this.feedbackType = 'warning';
+        this.showFeedbackModal = true;
+        setTimeout(() => {
+          this.showFeedbackModal = false;
+          this.cdr.detectChanges();
+        }, 1500);
+
       return;
     }
 
     this.stockService.editStock(this.selectedProduct.id, this.selectedProduct).subscribe({
       next: () => {
-        console.log("Product edited successfully:", this.selectedProduct);
+
+        // this.feedbackTitle = 'Success';
+        this.feedbackMessage = 'Product edited successfully';
+        this.feedbackType = 'success';
+        this.showFeedbackModal = true;
+        setTimeout(() => {
+          this.showFeedbackModal = false;
+          this.cdr.detectChanges();
+        }, 1500);
+
         this.stockService.getStock().subscribe({
           next: (data) => {
             this.stock = data.map((item: any) => ({

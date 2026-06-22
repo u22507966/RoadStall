@@ -72,8 +72,8 @@ export class Dashboard implements OnInit {
   }
 
   goToProfile() {
-    // this.router.navigate(['/profile'])
-    alert("Functionality under construction. Come back later");
+    this.router.navigate(['/profile'])
+    // alert("Functionality under construction. Come back later");
   }
 
   addStockToSummary(){

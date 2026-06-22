@@ -15,10 +15,12 @@ import { Observable } from 'rxjs';
 import { isPlatformBrowser } from '@angular/common';
 import { Inject, PLATFORM_ID } from '@angular/core';
 import { ChangeDetectorRef, NgZone } from '@angular/core';
+import { TopQuickModal } from '../Modals/top-quick-modal/top-quick-modal';
 
 import ExcelJS from 'exceljs';
 import { saveAs } from 'file-saver';
 import { UserService } from '../Services/user-service';
+import { error } from 'console';
 
 interface todaysStockChangesTable {
   StockName?: string;
@@ -27,7 +29,7 @@ interface todaysStockChangesTable {
 
 @Component({
   selector: 'app-stock-take',
-  imports: [CommonModule, FormsModule],
+  imports: [CommonModule, FormsModule, TopQuickModal],
   templateUrl: './stock-take.html',
   styleUrl: './stock-take.css',
 })
@@ -67,6 +69,12 @@ export class StockTakeClass implements OnInit, OnDestroy {
 
   //role variables
   roleId!: number;
+
+  //External modal variables (Top Quick Modal comp)
+  showFeedbackModal: boolean = false; 
+  feedbackTitle: string = "";
+  feedbackMessage: string = "";
+  feedbackType: 'success' | 'error' | 'warning' | 'info' = 'info'; 
 
   constructor(private router: Router, private stockService: StockService, private stockTakeService: StockTakeService, private stockChangeService: StockChangeService,
     @Inject(PLATFORM_ID) private platformId: object, private cdr: ChangeDetectorRef, private saleService: SaleService, private userService: UserService, private ngZone: NgZone
@@ -132,7 +140,6 @@ export class StockTakeClass implements OnInit, OnDestroy {
         }, {} as Record<number, StockTake>);
 
         this.cdr.detectChanges();
-        console.log("Fetched and mapped stock take data in NgOnInIt:", this.StockTake);
       });
     });
 
@@ -171,7 +178,6 @@ export class StockTakeClass implements OnInit, OnDestroy {
 
       this.cdr.detectChanges();
 
-      console.log("Fetched stock change data in NgOnInIt:", this.currentStockChange);
     });
 
     this.saleService.getSales().subscribe((data: any[]) => {
@@ -185,7 +191,6 @@ export class StockTakeClass implements OnInit, OnDestroy {
 
       }));
       this.cdr.detectChanges();
-      console.log("Fetched sales data in NgOnInIt:", this.currentSales);
     });
 
     // Add window focus listener to refresh data when tab becomes active
@@ -205,7 +210,6 @@ export class StockTakeClass implements OnInit, OnDestroy {
 
   // Arrow function to maintain 'this' context
   private onWindowFocus = (): void => {
-    console.log('Window focused - refreshing stock data...');
     this.refreshAllData();
   }
 
@@ -383,20 +387,24 @@ export class StockTakeClass implements OnInit, OnDestroy {
   saveStockChange() {
 
     if (!this.selectedStockItem || this.selectedQuantity <= 0) {
-      console.warn('Invalid stock item or quantity. Cannot save stock change.');
+      this.showFeedbackModal = true;
+      this.feedbackMessage = 'Invalid stock item or quantity. Cannot save stock change.';
+      this.feedbackType = 'error';
+
+      setTimeout(() => {
+        this.showFeedbackModal = false;
+        this.cdr.detectChanges();
+      }, 1500);
       return;
     }
+
 
     const selectedStockItem = this.selectedStockItem;
     const selectedQuantity = this.selectedQuantity;
 
     //Getting the stocks StockTake to check if theres a closing stock, to then add the adjustment value to stock change model
-    console.log('selected id:', selectedStockItem.id);
     this.stockTakeService.getStockTakeByStockId(selectedStockItem.id).subscribe({
       next: (stockTake) => {
-        // console.log('Fetched stock take for selected item:', stockTake);
-        // console.log('ClosingStock value:', stockTake.ClosingStock);
-        // console.log('Full stockTake object:', JSON.stringify(stockTake));
 
         var isAdjustment = 0;
         // Backend sends closingStock with lowercase 'c'
@@ -404,7 +412,6 @@ export class StockTakeClass implements OnInit, OnDestroy {
         if (closingStock > 0) {
           isAdjustment = 1;
         }
-        // console.log('isAdjustment value:', isAdjustment);
 
         this.stockAuditTrail.push({
           Id: this.stockAuditTrail.length + 1,
@@ -427,7 +434,6 @@ export class StockTakeClass implements OnInit, OnDestroy {
 
         this.stockChangeService.PostStockChange(x).subscribe({
           next: (response) => {
-            console.log('Stock change saved successfully:', response);
             // Refresh data without hard reload
             this.stock$ = this.stockService.getStock();
             this.stockChangeService.GetStockChange().subscribe((data: any[]) => {
@@ -460,7 +466,6 @@ export class StockTakeClass implements OnInit, OnDestroy {
               });
             });
 
-            console.log("Stock change saved:", this.stockAuditTrail);
             this.selectedQuantity = 0;
           },
           error: (error) => {
@@ -478,7 +483,7 @@ export class StockTakeClass implements OnInit, OnDestroy {
   } //save stock changes method
 
   sendUpdates() {
-    console.log("Sending stock updates to backend...", this.CurrentStock);
+    // console.log("Sending stock updates to backend...", this.CurrentStock);
   }
 
   UpdateStockTake(product?: StockTake) {
@@ -487,8 +492,6 @@ export class StockTakeClass implements OnInit, OnDestroy {
       console.warn('UpdateStockTake called with undefined product', 'prod:', product);
       return;
     }
-
-    console.log("stockID For opening stock: " + product.StockId + " Full stocktake object: ", product);
 
     const currentUserId: number = Number(localStorage.getItem('userId') ?? 0);
     if (currentUserId === 0) {
@@ -516,11 +519,8 @@ export class StockTakeClass implements OnInit, OnDestroy {
         ClosingStock: Number((product as any).ClosingStock ?? 0),
       };
 
-      console.log('Sending PascalCase payload to API:', payloadPascal);
-
       this.stockTakeService.updateStockTake(product!.ID, product!).subscribe({
         next: (response) => {
-          console.log('Stock take updated successfully:', response);
           // No need to refresh stock data - only StockTake was updated
           this.cdr.detectChanges();
         },
@@ -534,7 +534,6 @@ export class StockTakeClass implements OnInit, OnDestroy {
 
     this.updateTimers.set(idForUrl, timer);
 
-    console.log('Current Stock Take Data:', this.StockTake);
   }
 
   async exportStockTableToExcel() {
@@ -650,7 +649,6 @@ export class StockTakeClass implements OnInit, OnDestroy {
       // Fetch historical data from API
       const response = await this.stockTakeService.getHistoryExportData(exportDate.toISOString().split('T')[0]).toPromise();
 
-      console.log('Full API Response:', JSON.stringify(response, null, 2));
 
       if (!response || !response.data || response.data.length === 0) {
         alert(`No stock take data found for ${dateStr}`);
@@ -658,8 +656,6 @@ export class StockTakeClass implements OnInit, OnDestroy {
       }
 
       const historyData = response.data;
-      console.log('History Data Array:', JSON.stringify(historyData, null, 2));
-      console.log('First Item:', historyData[0]);
 
       // Helper to safely get property (try both PascalCase and camelCase)
       const getProp = (obj: any, propName: string): any => {
@@ -729,14 +725,12 @@ export class StockTakeClass implements OnInit, OnDestroy {
       // Row 1: Product names header
       tableData.push(['', ...historyData.map((item: any) => {
         const name = getProp(item, 'StockName');
-        console.log('Stock Name:', name);
         return name || 'Unknown';
       })]);
 
       // Row 2: Prices
       tableData.push(['Price', ...historyData.map((item: any) => {
         const price = getProp(item, 'Price');
-        console.log('Price:', price);
         return price ?? 0;
       })]);
 
@@ -783,8 +777,6 @@ export class StockTakeClass implements OnInit, OnDestroy {
         const stockLeft = getProp(item, 'StockLeft');
         return stockLeft ?? 0;
       })]);
-
-      console.log('Table Data:', tableData);
 
       // Section row indices (for styling) - dynamic based on maxReceivedRows and maxRemovedRows
       const stockReceivedHeaderRow = 3;
@@ -861,7 +853,6 @@ export class StockTakeClass implements OnInit, OnDestroy {
 
       this.ngZone.run(() => {
         this.exportErrorMessage = error.error?.message + ". Please select a new valid date to export.";
-        console.log(this.exportErrorMessage);
         // Force Angular to detect the change
         setTimeout(() => this.cdr.markForCheck(), 0);
       });
@@ -882,7 +873,6 @@ export class StockTakeClass implements OnInit, OnDestroy {
     this.userService.getUserById(userId).subscribe({
       next: (user) => {
         this.cachedUserNames[userId] = user.username;
-        console.log("Fetched user name for ID", userId, ":", user.username);
         this.cdr.detectChanges();
       },
       error: (error) => {

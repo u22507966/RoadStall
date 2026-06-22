@@ -27,6 +27,7 @@
                             <th>Price: R{{sale.TotalPrice}}</th>
                             <th>Quantity: <input type="number" [(ngModel)]="sale.QuantitySold"></th>
                             <th>Total: R{{sale.TotalPrice * sale.QuantitySold}}</th>
+                            <th><button id="delete-sale-button" (click)="deleteSale(i)">-</button></th>
                         </tr>
                         <tr *ngIf="currentSales.length > 1">
                             <th colspan="3">Grand Total:</th>

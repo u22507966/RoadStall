@@ -440,6 +440,13 @@ export class Sales implements OnInit {
     // Only add to the active cart (`currentSales`).
     // We'll record the final quantities into `sales` when the sale is finished.
     this.currentSales.push({ ...newSale });
+    console.log("Current sales array:", this.currentSales)
+  }
+
+  deleteSale(index: number){
+    this.currentSales.splice(index, 1);
+    this.selectedProdNames.splice(index, 1)
+    this.cdr.detectChanges();
   }
 
   finishSale() {
