@@ -9,7 +9,7 @@ import { NotificationDto } from '../Models/Dto/NotificationDto';
 })
 export class Notifications {
   
-  private readonly VAPID_PUBLIC_KEY = 'BHsRGFM108YdZjmoUupXm7A48gxA-7QtbsHT2m6R0--xDPe6zl333fFBPa_IiGI0KLAhbtKDyrSTmE2RXrc4kw8';
+  private readonly VAPID_PUBLIC_KEY = 'BDb5808AydxxtQ25FMFwBbXulSwpne4p_pRAqh7PrJI4wmosQIH-tLR7VqG8m9ZlDhDBLV8FhC31031wYtPoywY';
   private readonly apiUrl = environment.apiUrl;
   private userid: number = parseInt(localStorage.getItem('userId') || '0');
 
