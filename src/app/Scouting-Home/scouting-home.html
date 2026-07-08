@@ -1,0 +1,457 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <title>Scouting — Rionde Fruit Farm</title>
+</head>
+<body>
+
+  <!-- ===== TOAST ===== -->
+  <div id="toast" class="toast" aria-live="polite"></div>
+
+  <!-- ===== HOME ===== -->
+  <div id="view-home" class="view active">
+    <header class="topbar">
+      <h1 class="topbar-title">
+        <svg class="icon-inline" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 10a6 6 0 0 0 -6 -6h-3v2a6 6 0 0 0 6 6h3"/><path d="M12 14a6 6 0 0 1 6 -6h3v1a6 6 0 0 1 -6 6h-3"/><path d="M12 20v-10"/></svg>
+        Scouting
+      </h1>
+      <p class="topbar-sub">Rionde Fruit Farm — select activity</p>
+    </header>
+    <main class="body">
+      <button class="nav-card" data-target="view-stink">
+        <span class="nav-icon nav-icon--coral">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 12m-5 0a5 5 0 1 0 10 0a5 5 0 1 0 -10 0"/><path d="M12 7v-4"/><path d="M10 3h4"/><path d="M6.5 9l-3 -1"/><path d="M6.5 15l-3 1"/><path d="M17.5 9l3 -1"/><path d="M17.5 15l3 1"/><path d="M12 17v4"/></svg>
+        </span>
+        <span class="nav-text">
+          <span class="nav-label">Stink bug knock down</span>
+          <span class="nav-desc">Post-spray ground count · Macadamia</span>
+        </span>
+        <svg class="icon-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6l-6 6"/></svg>
+      </button>
+
+      <button class="nav-card" data-target="view-field">
+        <span class="nav-icon nav-icon--teal">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 13v-8l-4 4"/><path d="M12 5l4 4"/><path d="M8 21h8"/><path d="M12 13c4 0 6 2 6 6h-12c0 -4 2 -6 6 -6z"/></svg>
+        </span>
+        <span class="nav-text">
+          <span class="nav-label">Field scouting</span>
+          <span class="nav-desc">On-tree pest inspection · All crops</span>
+        </span>
+        <svg class="icon-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6l-6 6"/></svg>
+      </button>
+
+      <button class="nav-card" data-target="view-wax">
+        <span class="nav-icon nav-icon--purple">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="4"/><circle cx="12" cy="12" r="1"/></svg>
+        </span>
+        <span class="nav-text">
+          <span class="nav-label">Wax scale scouting</span>
+          <span class="nav-desc">Scale pest count · Litchi only</span>
+        </span>
+        <svg class="icon-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6l-6 6"/></svg>
+      </button>
+
+      <button class="nav-card" data-target="view-trap">
+        <span class="nav-icon nav-icon--amber">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3a4 4 0 0 1 2 7.5v3.5h-4v-3.5a4 4 0 0 1 2 -7.5"/><path d="M10 17v1a2 2 0 0 0 4 0v-1"/><path d="M6 8h-2"/><path d="M18 8h2"/><path d="M7 4l-1 -1"/><path d="M17 4l1 -1"/></svg>
+        </span>
+        <span class="nav-text">
+          <span class="nav-label">Trap scouting</span>
+          <span class="nav-desc">Lure trap check · All crops</span>
+        </span>
+        <svg class="icon-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 6l6 6l-6 6"/></svg>
+      </button>
+    </main>
+  </div>
+
+  <!-- ===== 1. STINK BUG KNOCK DOWN ===== -->
+  <div id="view-stink" class="view">
+    <header class="topbar">
+      <button class="back-btn" data-target="view-home" aria-label="Back">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 6l-6 6l6 6"/></svg>
+      </button>
+      <div>
+        <h1 class="topbar-title">Stink bug knock down</h1>
+        <p class="topbar-sub">Count bugs on ground per station after spray</p>
+      </div>
+    </header>
+    <main class="body">
+      <form id="form-stink" autocomplete="off">
+        <div class="form-grid-2">
+          <div class="field">
+            <label class="field-label" for="stink-date">Date</label>
+            <input type="date" id="stink-date" required>
+          </div>
+          <div class="field">
+            <label class="field-label" for="stink-block">Block</label>
+            <select id="stink-block" required>
+              <option value="">Select block</option>
+              <option>1A</option><option>1B</option><option>1C</option><option>1D</option>
+              <option>2</option><option>2B</option><option>3</option><option>4</option>
+              <option>5</option><option>5A</option><option>7</option><option>8</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-grid-2">
+          <div class="field">
+            <label class="field-label" for="stink-tps">Trees per station</label>
+            <input type="number" id="stink-tps" min="1" max="20" value="6" inputmode="numeric">
+          </div>
+          <div class="field">
+            <label class="field-label" for="stink-ns">Nr of stations</label>
+            <select id="stink-ns">
+              <option value="5">5</option>
+              <option value="6">6</option>
+              <option value="7">7</option>
+              <option value="8">8</option>
+              <option value="9">9</option>
+              <option value="10" selected>10</option>
+            </select>
+          </div>
+        </div>
+
+        <p class="section-label">Counts per station</p>
+
+        <div class="station-table" id="station-table">
+          <div class="station-hdr"></div>
+          <div class="station-hdr">Long</div>
+          <div class="station-hdr">Med</div>
+          <div class="station-hdr">Short</div>
+          <div class="station-hdr">Nymph</div>
+          <!-- JS fills station rows -->
+        </div>
+
+        <div class="total-strip">
+          <span>Total bugs</span>
+          <span class="total-val" id="stink-total">0</span>
+        </div>
+        <div class="total-strip">
+          <span>Bugs per tree</span>
+          <span class="total-val" id="stink-pertree">0</span>
+        </div>
+
+        <div class="field" style="margin-top:16px">
+          <label class="field-label" for="stink-scout">Scout name</label>
+          <input type="text" id="stink-scout" placeholder="e.g. Grace" required>
+        </div>
+
+        <button type="submit" class="btn-primary">Save record</button>
+      </form>
+    </main>
+  </div>
+
+  <!-- ===== 2. FIELD SCOUTING ===== -->
+  <div id="view-field" class="view">
+    <header class="topbar">
+      <button class="back-btn" data-target="view-home" aria-label="Back">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 6l-6 6l6 6"/></svg>
+      </button>
+      <div>
+        <h1 class="topbar-title">Field scouting</h1>
+        <p class="topbar-sub">Inspect sample trees for pests &amp; damage</p>
+      </div>
+    </header>
+    <main class="body">
+      <form id="form-field" autocomplete="off">
+        <label class="field-label">Crop</label>
+        <div class="chip-row" id="field-crop-chips">
+          <button type="button" class="chip selected" data-crop="mac">Macadamia</button>
+          <button type="button" class="chip" data-crop="avo">Avocado</button>
+        </div>
+
+        <div class="form-grid-2">
+          <div class="field">
+            <label class="field-label" for="field-date">Date</label>
+            <input type="date" id="field-date" required>
+          </div>
+          <div class="field">
+            <label class="field-label" for="field-block">Block</label>
+            <select id="field-block" required>
+              <option value="">Select block</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="field">
+          <label class="field-label" for="field-qty">Qty trees sampled</label>
+          <input type="number" id="field-qty" min="1" max="20" placeholder="e.g. 6" inputmode="numeric" required>
+        </div>
+
+        <!-- Macadamia pests -->
+        <div id="field-mac" class="crop-section">
+          <p class="section-label">Egg packets</p>
+          <div class="pest-row">
+            <span class="pest-name">Fresh eggs</span>
+            <input type="number" class="pest-input" inputmode="numeric" min="0">
+          </div>
+          <div class="pest-row">
+            <span class="pest-name">Parasitised eggs</span>
+            <input type="number" class="pest-input" inputmode="numeric" min="0">
+          </div>
+
+          <p class="section-label">Dropped nuts</p>
+          <div class="pest-row">
+            <span class="pest-name">Reason</span>
+            <input type="text" class="pest-input pest-input--wide" placeholder="Free text">
+          </div>
+
+          <p class="section-label">Other</p>
+          <div class="pest-row">
+            <span class="pest-name">Other problems</span>
+            <input type="text" class="pest-input pest-input--wide" placeholder="Free text">
+          </div>
+        </div>
+
+        <!-- Avocado pests -->
+        <div id="field-avo" class="crop-section" hidden>
+          <p class="section-label">Avo bug</p>
+          <div class="pest-row">
+            <span class="pest-name">Insects</span>
+            <input type="number" class="pest-input" inputmode="numeric" min="0">
+          </div>
+          <div class="pest-row">
+            <span class="pest-name">Fruit damage</span>
+            <input type="number" class="pest-input" inputmode="numeric" min="0">
+          </div>
+
+          <p class="section-label">Coconut bug</p>
+          <div class="pest-row">
+            <span class="pest-name">Insects</span>
+            <input type="number" class="pest-input" inputmode="numeric" min="0">
+          </div>
+          <div class="pest-row">
+            <span class="pest-name">Fruit damage</span>
+            <input type="number" class="pest-input" inputmode="numeric" min="0">
+          </div>
+
+          <p class="section-label">Scale insects</p>
+          <div class="pest-row">
+            <span class="pest-name">Type</span>
+            <input type="text" class="pest-input pest-input--wide" placeholder="e.g. soft scale">
+          </div>
+          <div class="pest-row">
+            <span class="pest-name">Amount</span>
+            <input type="number" class="pest-input" inputmode="numeric" min="0">
+          </div>
+
+          <p class="section-label">Other</p>
+          <div class="pest-row">
+            <span class="pest-name">Thrips</span>
+            <input type="number" class="pest-input" inputmode="numeric" min="0">
+          </div>
+          <div class="pest-row">
+            <span class="pest-name">Beneficials — type</span>
+            <input type="text" class="pest-input pest-input--wide" placeholder="e.g. ladybird">
+          </div>
+          <div class="pest-row">
+            <span class="pest-name">Beneficials — amount</span>
+            <input type="number" class="pest-input" inputmode="numeric" min="0">
+          </div>
+        </div>
+
+        <div class="field" style="margin-top:16px">
+          <label class="field-label" for="field-scout">Scout name</label>
+          <input type="text" id="field-scout" placeholder="e.g. Grace" required>
+        </div>
+        <button type="submit" class="btn-primary">Save record</button>
+      </form>
+    </main>
+  </div>
+
+  <!-- ===== 3. WAX SCALE SCOUTING ===== -->
+  <div id="view-wax" class="view">
+    <header class="topbar">
+      <button class="back-btn" data-target="view-home" aria-label="Back">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 6l-6 6l6 6"/></svg>
+      </button>
+      <div>
+        <h1 class="topbar-title">Wax scale scouting</h1>
+        <p class="topbar-sub">Litchi wax scale pest count per block</p>
+      </div>
+    </header>
+    <main class="body">
+      <form id="form-wax" autocomplete="off">
+        <div class="form-grid-2">
+          <div class="field">
+            <label class="field-label" for="wax-date">Date</label>
+            <input type="date" id="wax-date" required>
+          </div>
+          <div class="field">
+            <label class="field-label" for="wax-block">Block</label>
+            <select id="wax-block" required>
+              <option value="">Select block</option>
+              <option>1A</option><option>1B</option><option>1C</option>
+              <option>2A</option><option>2B (1)</option><option>2B (2)</option><option>2C</option>
+              <option>3A</option><option>3B</option><option>3C</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="field">
+          <label class="field-label" for="wax-qty">Qty trees</label>
+          <input type="number" id="wax-qty" min="1" max="20" placeholder="e.g. 5" inputmode="numeric" required>
+        </div>
+
+        <p class="section-label">Scale counts</p>
+        <div class="pest-row">
+          <span class="pest-name">Pink wax scale</span>
+          <input type="number" class="pest-input wax-count" inputmode="numeric" min="0" value="">
+        </div>
+        <div class="pest-row">
+          <span class="pest-name">Fig wax scale</span>
+          <input type="number" class="pest-input wax-count" inputmode="numeric" min="0" value="">
+        </div>
+        <div class="pest-row">
+          <span class="pest-name">Coffee green scale</span>
+          <input type="number" class="pest-input wax-count" inputmode="numeric" min="0" value="">
+        </div>
+        <div class="pest-row">
+          <span class="pest-name">Karoo thorn mealy bug</span>
+          <input type="number" class="pest-input wax-count" inputmode="numeric" min="0" value="">
+        </div>
+
+        <div class="total-strip">
+          <span>Total pests</span>
+          <span class="total-val" id="wax-total">0</span>
+        </div>
+
+        <div class="field" style="margin-top:16px">
+          <label class="field-label" for="wax-scout">Scout name</label>
+          <input type="text" id="wax-scout" placeholder="e.g. Grace" required>
+        </div>
+        <button type="submit" class="btn-primary">Save record</button>
+      </form>
+    </main>
+  </div>
+
+  <!-- ===== 4. TRAP SCOUTING ===== -->
+  <div id="view-trap" class="view">
+    <header class="topbar">
+      <button class="back-btn" data-target="view-home" aria-label="Back">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M15 6l-6 6l6 6"/></svg>
+      </button>
+      <div>
+        <h1 class="topbar-title">Trap scouting</h1>
+        <p class="topbar-sub">Record pests caught in lure traps</p>
+      </div>
+    </header>
+    <main class="body">
+      <form id="form-trap" autocomplete="off">
+        <label class="field-label">Crop</label>
+        <div class="chip-row" id="trap-crop-chips">
+          <button type="button" class="chip selected" data-crop="litchi">Litchi</button>
+          <button type="button" class="chip" data-crop="avocado">Avocado</button>
+          <button type="button" class="chip" data-crop="macadamia">Macadamia</button>
+        </div>
+
+        <div class="form-grid-2">
+          <div class="field">
+            <label class="field-label" for="trap-date">Date</label>
+            <input type="date" id="trap-date" required>
+          </div>
+          <div class="field">
+            <label class="field-label" for="trap-block">Block / Trap no</label>
+            <input type="text" id="trap-block" placeholder="e.g. 1A / EGO 1" required>
+          </div>
+        </div>
+
+        <!-- Litchi traps -->
+        <div id="trap-litchi" class="crop-section">
+          <p class="section-label">Trap types — litchi</p>
+          <div class="trap-row">
+            <div class="trap-info">
+              <span class="trap-code">EGO</span>
+              <span class="trap-full">Fruit fly lure</span>
+            </div>
+            <input type="number" class="pest-input trap-count" inputmode="numeric" min="0" data-pest="EGO">
+          </div>
+          <div class="trap-row">
+            <div class="trap-info">
+              <span class="trap-code">FCM</span>
+              <span class="trap-full">False codling moth</span>
+            </div>
+            <input type="number" class="pest-input trap-count" inputmode="numeric" min="0" data-pest="FCM">
+          </div>
+          <div class="trap-row">
+            <div class="trap-info">
+              <span class="trap-code">LFM</span>
+              <span class="trap-full">Litchi fruit moth</span>
+            </div>
+            <input type="number" class="pest-input trap-count" inputmode="numeric" min="0" data-pest="LFM">
+          </div>
+          <div class="trap-row">
+            <div class="trap-info">
+              <span class="trap-code">ME</span>
+              <span class="trap-full">Bactrocera invadens</span>
+            </div>
+            <input type="number" class="pest-input trap-count" inputmode="numeric" min="0" data-pest="ME">
+          </div>
+          <div class="trap-row">
+            <div class="trap-info">
+              <span class="trap-code">MNB</span>
+              <span class="trap-full">Macadamia nut borer</span>
+            </div>
+            <input type="number" class="pest-input trap-count" inputmode="numeric" min="0" data-pest="MNB">
+          </div>
+        </div>
+
+        <!-- Avocado traps -->
+        <div id="trap-avocado" class="crop-section" hidden>
+          <p class="section-label">Trap types — avocado</p>
+          <div class="trap-row">
+            <div class="trap-info">
+              <span class="trap-code">EGO</span>
+              <span class="trap-full">Fruit fly lure</span>
+            </div>
+            <input type="number" class="pest-input trap-count" inputmode="numeric" min="0" data-pest="EGO">
+          </div>
+          <div class="trap-row">
+            <div class="trap-info">
+              <span class="trap-code">FCM</span>
+              <span class="trap-full">False codling moth</span>
+            </div>
+            <input type="number" class="pest-input trap-count" inputmode="numeric" min="0" data-pest="FCM">
+          </div>
+          <div class="trap-row">
+            <div class="trap-info">
+              <span class="trap-code">ME</span>
+              <span class="trap-full">Bactrocera invadens</span>
+            </div>
+            <input type="number" class="pest-input trap-count" inputmode="numeric" min="0" data-pest="ME">
+          </div>
+          <div class="trap-row">
+            <div class="trap-info">
+              <span class="trap-code">MNB</span>
+              <span class="trap-full">Macadamia nut borer</span>
+            </div>
+            <input type="number" class="pest-input trap-count" inputmode="numeric" min="0" data-pest="MNB">
+          </div>
+        </div>
+
+        <!-- Macadamia traps -->
+        <div id="trap-macadamia" class="crop-section" hidden>
+          <p class="section-label">Trap types — macadamia</p>
+          <div class="trap-row">
+            <div class="trap-info">
+              <span class="trap-code">MNB</span>
+              <span class="trap-full">Macadamia nut borer</span>
+            </div>
+            <input type="number" class="pest-input trap-count" inputmode="numeric" min="0" data-pest="MNB">
+          </div>
+        </div>
+
+        <div class="field" style="margin-top:16px">
+          <label class="field-label" for="trap-scout">Scout name</label>
+          <input type="text" id="trap-scout" placeholder="e.g. Grace" required>
+        </div>
+        <button type="submit" class="btn-primary">Save record</button>
+      </form>
+    </main>
+  </div>
+
+  <!-- <script src="scouting.js"></script> -->
+</body>
+</html>

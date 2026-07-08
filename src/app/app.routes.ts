@@ -6,6 +6,7 @@ import { Sales } from './sales/sales';
 import { Products } from './products/products';
 import { User } from './user/user';
 import { Profile } from './profile/profile';
+import { ScoutingHome } from './Scouting-Home/scouting-home';
 
 
 export const routes: Routes = [
@@ -16,5 +17,6 @@ export const routes: Routes = [
     { path: 'sales', component: Sales },
     { path: 'products', component: Products },
     {path: 'user', component: User},
-    {path: 'profile', component: Profile}
+    {path: 'profile', component: Profile},
+    {path: 'scouting-home', component: ScoutingHome}
 ];

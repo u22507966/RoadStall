@@ -1,7 +1,7 @@
 import { Injectable } from '@angular/core';
 import {SwPush} from "@angular/service-worker";
 import {  HttpClient } from "@angular/common/http";
-import { environment } from '../../environments/environment.prod';
+import { environment } from '../../environments/environment';
 import { NotificationDto } from '../Models/Dto/NotificationDto';
 
 @Injectable({

@@ -43,6 +43,7 @@
 
 .top-left-buttons{
     justify-content: flex-start;
+    gap: 12px;
 }
 
 .top-left-buttons button{
